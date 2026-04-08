@@ -86,7 +86,7 @@ nav {
     height: 100vh;
     width: 100%;
     background-color: var(--white);
-    background-image: url('images/shutterstock_767974093.jpg');
+    background-image: url('images/767974093.jpg');
     background-size: cover;
     background-position: center;
     display: flex;
@@ -185,7 +185,7 @@ nav {
 
 /* Imagen de Unity/VR */
 .img-unity {
-    background-image: url('images/shutterstock_563457064.jpg');
+    background-image: url('images/563457064.jpg');
 }
 
 .split-content {
@@ -284,7 +284,7 @@ nav {
 /* --- SECCIÓN CON FILTRO GRIS (VR LABORATORY) --- */
 .vr-lab-section {
     height: 600px;
-    background-image: url('images/shutterstock_540015799.jpg');
+    background-image: url('images/540015799.jpg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
