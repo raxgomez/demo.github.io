@@ -1,0 +1,427 @@
+/* =====================================================================
+   ASISTENTES DEL SITIO · dúo "Ing. Bot-dinez" 🤖 + "Ing. Glor-IA" ✨
+   =====================================================================
+   - Flujos deterministas (sin IA de pago): burbujas + chips de opción.
+   - Precios y nombres SIEMPRE leídos de data/certificaciones.json (catálogo vivo).
+   - Nunca pide datos personales: el cierre es siempre WhatsApp.
+   - Reparto de roles: Bot-dinez = técnico (precios, catálogo, cotizador,
+     vigencias, proceso) · Glor-IA = promos, FAQ de atención y cierre a WhatsApp.
+   - Guion v1 aprobado (guion-asistente.html) + decisiones 2026-11-20:
+     horarios L-V 9-18 / Sáb 9-16, examen en línea.
+   ===================================================================== */
+(function () {
+  'use strict';
+
+  /* ================== CONFIGURACIÓN (editable) ================== */
+  const PERSONAS = {
+    bd: { nombre: 'Ing. Bot-dinez', emoji: '🤖' },
+    gl: { nombre: 'Ing. Glor-IA', emoji: '✨' }
+  };
+  const WHATSAPP_NUMERO = '525611309741'; // mantener sincronizado con script.js
+  const DESCUENTO_2 = 5;  // % con 2 certificaciones
+  const DESCUENTO_3 = 10; // % con 3 o más
+  const HORARIOS = 'Lunes a viernes de 9:00 a 18:00 y sábados de 9:00 a 16:00.';
+  const VIGENCIA_VOUCHER = '6 meses';
+  const VIGENCIA_CERT = '5 años';
+
+  /* ================== ESTADO ================== */
+  let cat = [];            // [{id, nombre, familia, corto, precio(Number|null), costoTxt}]
+  let paquete = [];        // certs del cotizador
+  let btn = null, panel = null, msgs = null, input = null, abierto = false;
+  let quienHabla = null;   // último emisor (para la etiqueta de nombre)
+
+  const $ = (sel, ctx) => (ctx || document).querySelector(sel);
+  const $$ = (sel, ctx) => [...(ctx || document).querySelectorAll(sel)];
+
+  /* ================== CATÁLOGO ================== */
+  function parseCosto(txt) {
+    const m = /\$([\d,]+)/.exec(txt || '');
+    return m ? Number(m[1].replace(/,/g, '')) : null;
+  }
+
+  function familiaDe(c) {
+    const m = c.marca.split(' / ')[0];
+    const n = c.nombreExamen;
+    if (m === 'Adobe') return 'Adobe';
+    if (m === 'Autodesk') return 'Autodesk';
+    if (m === 'Unity') return 'Unity';
+    if (m === 'Apple') return 'Swift (Apple)';
+    if (m === 'Cisco') return 'Cisco';
+    if (m === 'Intuit') return 'Intuit';
+    if (m === 'Meta') return 'Meta';
+    if (m === 'PMI') return 'PMI';
+    if (/^IC3/.test(n)) return 'IC3';
+    if (/^IT Specialist/.test(n)) return 'IT Specialist';
+    if (/Entrepreneurship and Small Business/.test(n)) return 'ESB';
+    if (/English for IT/.test(n)) return 'English for IT';
+    if (/Professional Communication|Generative AI/.test(n)) return 'Skills For Business';
+    if (/Certified Educator/.test(n)) return 'Microsoft Educator';
+    if (m === 'Microsoft') return 'Microsoft Office';
+    return m;
+  }
+
+  function nombreCorto(c) {
+    let s = c.nombreExamen
+      .replace(/^Microsoft (Word|Excel|PowerPoint|Outlook|Access)( Expert)?\b.*$/i, (mm, app, exp) => app + (exp ? ' Expert' : ''))
+      .replace(/^IT Specialist - /, '')
+      .replace(/^Cisco Certified Support Technician \(CCST\) /, 'CCST ')
+      .replace(/^Unity Certified User: /, 'Unity ')
+      .replace(/^App Development with Swift - /, 'Swift ')
+      .replace(/^Autodesk Certified User - /, '')
+      .replace(/^Adobe Certified Professional - .* Using Adobe /, '')
+      .replace(/^Entrepreneurship and Small Business \(ESB\)\s*—?\s*/i, 'ESB ')
+      .replace(/^Intuit Design for Delight \(D4D\) Innovator$/i, 'Design for Delight (D4D)')
+      .replace(/^Meta Certified Digital Marketing Associate$/i, 'Digital Marketing Associate')
+      .replace(/^PMI Project Management Ready.*$/i, 'Project Management Ready')
+      .replace(/^Microsoft Certified Educator \(MCE\).*$/i, 'Microsoft Certified Educator');
+    if (s.length > 34) s = s.slice(0, 32).trim() + '…';
+    return s;
+  }
+
+  function cargarCatalogo() {
+    return fetch('data/certificaciones.json', { cache: 'no-store' })
+      .then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then((data) => {
+        const lista = Array.isArray(data) ? data : (data.certificaciones || []);
+        cat = lista.map((c) => {
+          const opts = (c.temario && c.temario.certificacion && c.temario.certificacion.opciones) || [];
+          const costoTxt = opts[0] ? opts[0].costo : 'Consultar';
+          return {
+            id: c.id,
+            nombre: c.nombreExamen,
+            familia: familiaDe(c),
+            corto: nombreCorto(c),
+            precio: parseCosto(costoTxt),
+            costoTxt: costoTxt
+          };
+        });
+      });
+  }
+
+  const familias = () => [...new Set(cat.map((c) => c.familia))];
+  const fmt = (n) => '$' + n.toLocaleString('es-MX');
+
+  /* ================== RENDER ================== */
+  function burbuja(html, quien, delay) {
+    const b = document.createElement('div');
+    b.className = 'asb asb-bot asb-' + quien;
+    let prefix = '';
+    if (quienHabla !== quien) {
+      prefix = '<div class="as-quien">' + PERSONAS[quien].emoji + ' ' + PERSONAS[quien].nombre + '</div>';
+      quienHabla = quien;
+    }
+    b.innerHTML = prefix + '<p>' + html + '</p>';
+    const mostrar = () => { msgs.appendChild(b); msgs.scrollTop = msgs.scrollHeight; };
+    if (delay) setTimeout(mostrar, delay); else mostrar();
+    return delay ? 500 : 0;
+  }
+
+  function chips(lista, delay) {
+    const wrap = document.createElement('div');
+    wrap.className = 'as-chips';
+    lista.forEach((ch) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'as-chip';
+      b.textContent = ch.label;
+      b.addEventListener('click', () => {
+        if (ch.eco) {
+          const u = document.createElement('div');
+          u.className = 'asb asb-user';
+          u.innerHTML = '<p>' + ch.eco + '</p>';
+          msgs.appendChild(u);
+          msgs.scrollTop = msgs.scrollHeight;
+        }
+        limpiarChips();
+        ch.fn();
+      });
+      wrap.appendChild(b);
+    });
+    const mostrar = () => { msgs.appendChild(wrap); msgs.scrollTop = msgs.scrollHeight; };
+    if (delay) setTimeout(mostrar, delay); else mostrar();
+  }
+
+  function limpiarChips() { $$('.as-chips', msgs).forEach((c) => c.remove()); }
+
+  function escribir(html, listaChips, quien) {
+    // indicador de "escribiendo…" y luego burbuja + chips (quien: 'bd' | 'gl')
+    const s = quien || 'bd';
+    const t = document.createElement('div');
+    t.className = 'as-typing' + (s === 'gl' ? ' as-typing-gl' : '');
+    t.innerHTML = '<span></span><span></span><span></span>';
+    msgs.appendChild(t);
+    msgs.scrollTop = msgs.scrollHeight;
+    setTimeout(() => {
+      t.remove();
+      burbuja(html, s);
+      if (listaChips) chips(listaChips, 250);
+    }, 480);
+  }
+
+  /* ================== WHATSAPP ================== */
+  function abrirWA(mensaje) {
+    escribir('¡Perfecto! Te abrí WhatsApp con tu mensaje ya escrito — solo presiona enviar 📲', null, 'gl');
+    window.open(waURL(mensaje), '_blank', 'noopener');
+  }
+  function waURL(mensaje) {
+    return 'https://wa.me/' + WHATSAPP_NUMERO + '?text=' + encodeURIComponent(mensaje);
+  }
+
+  /* ================== FLUJOS ================== */
+  function menuPrincipal(corto) {
+    paquete = [];
+    if (corto) {
+      escribir('¿En qué te ayudo ahora? 🙂', MENU_CHIPS, 'gl');
+    } else {
+      escribir('¡Hola! 👋 Soy <strong>' + PERSONAS.bd.nombre + '</strong>, el asistente técnico de Sagomu. Te ayudo con precios, promos, vigencias y el proceso para certificarte. ¿Por dónde empezamos?', null, 'bd');
+      setTimeout(() => {
+        burbuja('¡Y yo soy la <strong>' + PERSONAS.gl.nombre + '</strong>! 💜 Cuando se trata de promos y atención, yo tomo el teclado.');
+        chips(MENU_CHIPS, 200);
+      }, 900);
+    }
+  }
+  const MENU_CHIPS = [
+    { label: '💵 Ver precios', fn: preciosFamilias, eco: '💵 Ver precios' },
+    { label: '🎁 Promo por paquetes', fn: promoIntro, eco: '🎁 Promo por paquetes' },
+    { label: '⏳ Vigencias', fn: vigencias, eco: '⏳ Vigencias' },
+    { label: '📝 ¿Cómo aplico?', fn: comoAplico, eco: '📝 ¿Cómo aplico?' },
+    { label: '💬 Hablar con un asesor', fn: asesor, eco: '💬 Hablar con un asesor' }
+  ];
+
+  function preciosFamilias() {
+    escribir('¡Claro! ¿Qué familia te interesa?',
+      familias().map((f) => ({ label: f, fn: () => preciosFamilia(f), eco: f }))
+        .concat([{ label: '🏠 Menú', fn: () => menuPrincipal(true) }]), 'bd');
+  }
+
+  function preciosFamilia(f) {
+    const exs = cat.filter((c) => c.familia === f);
+    if (!exs.length) { menuPrincipal(true); return; }
+    if (exs[0].precio === null) {
+      escribir('<strong>' + f + '</strong> se cotiza según tu caso 👇 Te llevo con el equipo:', [
+        { label: '💬 Cotizar por WhatsApp', fn: () => abrirWA('Hola, vengo del sitio de Sagomu. Me interesa ' + f + '. ¿Me pueden cotizar?'), eco: '💬 Cotizar por WhatsApp' },
+        { label: '⬅️ Otra familia', fn: preciosFamilias, eco: '⬅️ Otra familia' }
+      ], 'bd');
+      return;
+    }
+    const precios = [...new Set(exs.map((c) => c.costoTxt))];
+    const precioTxt = precios.length === 1 ? precios[0] : precios.join(' / ');
+    escribir('<strong>' + f + '</strong> — todas a <strong class="as-precio">' + precioTxt + '</strong> (IVA incluido ✔). ¿Cuál ves?',
+      exs.map((c) => ({ label: c.corto, fn: () => ficha(c), eco: c.corto }))
+        .concat([{ label: '⬅️ Otra familia', fn: preciosFamilias, eco: '⬅️ Otra familia' }]), 'bd');
+  }
+
+  function ficha(c) {
+    escribir(
+      '📋 <strong>' + c.nombre + '</strong><br>💵 <strong class="as-precio">' + c.costoTxt + '</strong> — IVA incluido<br>⏳ Voucher: ' + VIGENCIA_VOUCHER + ' para agendar · 🎓 Certificado: ' + VIGENCIA_CERT,
+      [
+        { label: '💬 Lo quiero por WhatsApp', fn: () => abrirWA('Hola, vengo del sitio de Sagomu. Me interesa el examen ' + c.nombre + ' (' + c.costoTxt + '). ¿Me ayudan con el proceso?'), eco: '💬 Lo quiero por WhatsApp' },
+        { label: '🎁 ¿Descuento por paquete?', fn: promoIntro, eco: '🎁 ¿Descuento por paquete?' },
+        { label: '📋 Otro examen', fn: preciosFamilias, eco: '📋 Otro examen' },
+        { label: '🏠 Menú', fn: () => menuPrincipal(true), eco: '🏠 Menú' }
+      ], 'bd');
+  }
+
+  function promoIntro() {
+    escribir('¡Simple: juntas, ahorras! 🎁<br><strong>2 certificaciones = ' + DESCUENTO_2 + '%</strong> · <strong>3 o más = ' + DESCUENTO_3 + '%</strong>. Y puedes mezclar programas (Word + Unity, por ejemplo).', [
+      { label: '🧮 Armar mi paquete', fn: cotInicio, eco: '🧮 Armar mi paquete' },
+      { label: '💵 Ver precios', fn: preciosFamilias, eco: '💵 Ver precios' },
+      { label: '🏠 Menú', fn: () => menuPrincipal(true), eco: '🏠 Menú' }
+    ], 'gl');
+  }
+
+  function cotInicio() {
+    paquete = [];
+    cotPedir();
+  }
+  function cotPedir() {
+    escribir(paquete.length ? '¡Va! Elige tu siguiente certificación:' : '¡Va! Elige tu primera certificación:',
+      familias().map((f) => ({ label: f, fn: () => cotFamilia(f), eco: f }))
+        .concat([{ label: paquete.length ? '✅ Eso es todo' : '🏠 Menú', fn: paquete.length ? cotTotal : () => menuPrincipal(true), eco: paquete.length ? '✅ Eso es todo' : '🏠 Menú' }]), 'bd');
+  }
+  function cotFamilia(f) {
+    const exs = cat.filter((c) => c.familia === f && c.precio !== null);
+    escribir('<strong>' + f + '</strong> — ¿cuál agregas?',
+      exs.map((c) => ({ label: c.corto, fn: () => cotAgregar(c), eco: c.corto }))
+        .concat([{ label: '⬅️ Otra familia', fn: cotPedir, eco: '⬅️ Otra familia' }]), 'bd');
+  }
+  function cotAgregar(c) {
+    paquete.push(c);
+    escribir('<strong>' + c.corto + '</strong> ✔ agregada. ¿Otra?', [
+      { label: '➕ Agregar otra', fn: cotPedir, eco: '➕ Agregar otra' },
+      { label: '✅ Eso es todo', fn: cotTotal, eco: '✅ Eso es todo' }
+    ], 'bd');
+  }
+  function cotTotal() {
+    if (!paquete.length) { menuPrincipal(true); return; }
+    const subtotal = paquete.reduce((a, c) => a + (c.precio || 0), 0);
+    const pct = paquete.length >= 3 ? DESCUENTO_3 : (paquete.length === 2 ? DESCUENTO_2 : 0);
+    const total = subtotal * (1 - pct / 100);
+    const ahorro = subtotal - total;
+    let html = 'Tu paquete 🎁<br>' + paquete.map((c) => '• ' + c.corto + ' — <strong class="as-precio">' + fmt(c.precio) + '</strong>').join('<br>');
+    html += '<br><br>Subtotal: ' + fmt(subtotal);
+    html += pct
+      ? ' · Descuento (' + paquete.length + ' certs): −' + pct + '%<br><strong>Total: <span class="as-precio">' + fmt(Number(total.toFixed(2))) + ' MXN</span></strong> — IVA incluido · Ahorras ' + fmt(Number(ahorro.toFixed(2)))
+      : '<br><em>Con una sola certificación no hay descuento — suma otra y ahorras ' + DESCUENTO_2 + '% 😉</em>';
+    const listaWA = paquete.map((c) => c.nombre).join(' + ');
+    escribir(html, [
+      { label: '💬 Confirmar por WhatsApp', fn: () => abrirWA('Hola, vengo del sitio de Sagomu. Quiero el paquete: ' + listaWA + ' — total con descuento: ' + fmt(Number(total.toFixed(2))) + ' MXN. ¿Lo confirmamos?'), eco: '💬 Confirmar por WhatsApp' },
+      { label: '➕ Agregar otra', fn: cotPedir, eco: '➕ Agregar otra' },
+      { label: '🔄 Empezar de nuevo', fn: cotInicio, eco: '🔄 Empezar de nuevo' },
+      { label: '🏠 Menú', fn: () => menuPrincipal(true), eco: '🏠 Menú' }
+    ], 'gl');
+  }
+
+  function vigencias() {
+    escribir('Tus tiempos clave ⏳<br>• Tu voucher sirve para agendar tu examen durante <strong>' + VIGENCIA_VOUCHER + '</strong> desde que lo adquieres.<br>• Tu certificado aprobado es válido por <strong>' + VIGENCIA_CERT + '</strong>.', [
+      { label: '📝 ¿Cómo aplico?', fn: comoAplico, eco: '📝 ¿Cómo aplico?' },
+      { label: '💵 Ver precios', fn: preciosFamilias, eco: '💵 Ver precios' },
+      { label: '🏠 Menú', fn: () => menuPrincipal(true), eco: '🏠 Menú' }
+    ], 'bd');
+  }
+
+  function comoAplico() {
+    escribir('El camino es corto:<br><br>1️⃣ Eliges tu certificación<br>2️⃣ Adquieres tu voucher<br>3️⃣ Agendas tu examen (dentro de los ' + VIGENCIA_VOUCHER + ' de tu voucher)<br>4️⃣ Presentas tu examen <strong>en línea</strong> o en la modalidad que acordemos<br>5️⃣ Recibes tu certificado digital, válido ' + VIGENCIA_CERT + ' 🎓', [
+      { label: '💵 Ver precios', fn: preciosFamilias, eco: '💵 Ver precios' },
+      { label: '🎁 Promo por paquetes', fn: promoIntro, eco: '🎁 Promo por paquetes' },
+      { label: '💬 Hablar con un asesor', fn: asesor, eco: '💬 Hablar con un asesor' },
+      { label: '🏠 Menú', fn: () => menuPrincipal(true), eco: '🏠 Menú' }
+    ], 'bd');
+  }
+
+  function faqMenu() {
+    escribir('¿Cuál es tu duda?', [
+      { label: '🕘 Horarios', fn: () => faqResp('horarios'), eco: '🕘 Horarios' },
+      { label: '💻 ¿Es en línea?', fn: () => faqResp('enlinea'), eco: '💻 ¿Es en línea?' },
+      { label: '🔁 ¿Y si no apruebo?', fn: () => faqResp('noaprobe'), eco: '🔁 ¿Y si no apruebo?' },
+      { label: '🏠 Menú', fn: () => menuPrincipal(true), eco: '🏠 Menú' }
+    ], 'gl');
+  }
+  function faqResp(k) {
+    if (k === 'horarios') escribir('Atendemos <strong>' + HORARIOS + '</strong> 🕘<br>Fuera de esos horarios déjanos tu mensaje por WhatsApp y te respondemos al inicio del siguiente turno.', [{ label: '💬 Escribir por WhatsApp', fn: asesor, eco: '💬 Escribir por WhatsApp' }, { label: '❓ Otras dudas', fn: faqMenu, eco: '❓ Otras dudas' }, { label: '🏠 Menú', fn: () => menuPrincipal(true), eco: '🏠 Menú' }], 'gl');
+    else if (k === 'enlinea') escribir('¡Sí! Los exámenes se presentan <strong>en línea</strong>, o en la modalidad que acordemos contigo al registrar.<br>Para examen en línea necesitas: computadora con internet estable, cámara y micrófono, y una identificación oficial vigente 🪪', [{ label: '📝 ¿Cómo aplico?', fn: comoAplico, eco: '📝 ¿Cómo aplico?' }, { label: '❓ Otras dudas', fn: faqMenu, eco: '❓ Otras dudas' }, { label: '🏠 Menú', fn: () => menuPrincipal(true), eco: '🏠 Menú' }], 'gl');
+    else escribir('Si no apruebas, puedes reagendar y presentar de nuevo tras un breve periodo de espera (varía según el programa). Además armamos contigo un <strong>plan de refuerzo</strong> de los temas que más se te dificultaron 💪', [{ label: '💵 Ver precios', fn: preciosFamilias, eco: '💵 Ver precios' }, { label: '❓ Otras dudas', fn: faqMenu, eco: '❓ Otras dudas' }, { label: '🏠 Menú', fn: () => menuPrincipal(true), eco: '🏠 Menú' }], 'gl');
+  }
+
+  const FUERA = [
+    'Jaja, esa se me escapa 😄 Nosotras solo dominamos de certificaciones: precios, promos, vigencias y el proceso. ¿Te ayudo con algo de eso?',
+    'Ups, eso está fuera de nuestro menú 😅 De certificaciones sí sabemos un montón — ¿te mostramos precios o promos?',
+    'Esa se la dejo a los expertos en comida 🍜. Nosotras somos de certificaciones: ¿qué te muestro?'
+  ];
+  let fueraIdx = 0;
+
+  function asesor() {
+    abrirWA('Hola, vengo del sitio de Sagomu y quiero hablar con un asesor.');
+  }
+
+  function interpretar(texto) {
+    const t = texto.toLowerCase();
+    if (/hola|buenas|hey|qué tal|que tal/.test(t)) { menuPrincipal(true); return; }
+    if (/precio|cuesta|costo|cuánto|cuanto/.test(t)) { preciosFamilias(); return; }
+    if (/promo|descuento|paquete|barato|oferta/.test(t)) { promoIntro(); return; }
+    if (/vigencia|vence|caduca|voucher|cuánto dura|cuanto dura/.test(t)) { vigencias(); return; }
+    if (/cómo aplico|como aplico|proceso|pasos|registro|inscrib|certificarme/.test(t)) { comoAplico(); return; }
+    if (/horario|atienden|abiertos|atención|atencion/.test(t)) { faqResp('horarios'); return; }
+    if (/línea|linea|en casa|online|remoto|dónde|donde|ubicad|oficina|presencial/.test(t)) { faqResp('enlinea'); return; }
+    if (/aprueb|reprobr|reintento|reinteg|fallé|falle|no pasé|no pase/.test(t)) { faqResp('noaprobe'); return; }
+    if (/factur/.test(t)) { escribir('Lo de la facturación te la resuelve el equipo humano en un minuto 🧾', [{ label: '💬 Preguntar por WhatsApp', fn: () => abrirWA('Hola, vengo del sitio de Sagomu. ¿Manejan facturación? Quisiera información.'), eco: '💬 Preguntar por WhatsApp' }, { label: '🏠 Menú', fn: () => menuPrincipal(true), eco: '🏠 Menú' }], 'gl'); return; }
+    if (/asesor|humano|persona|hablar|contact|whatsapp|whats/.test(t)) { asesor(); return; }
+    if (/faq|pregunta|duda/.test(t)) { faqMenu(); return; }
+    // ¿mencionó un examen o familia por nombre?
+    if (t.length >= 4) {
+      const c = cat.find((x) => x.corto.toLowerCase().includes(t) || x.nombre.toLowerCase().includes(t))
+        || cat.find((x) => x.familia.toLowerCase().includes(t));
+      if (c) { ficha(c); return; }
+    }
+    escribir(FUERA[fueraIdx++ % FUERA.length], [
+      { label: '💵 Ver precios', fn: preciosFamilias, eco: '💵 Ver precios' },
+      { label: '🎁 Promo por paquetes', fn: promoIntro, eco: '🎁 Promo por paquetes' },
+      { label: '🏠 Menú', fn: () => menuPrincipal(true), eco: '🏠 Menú' }
+    ], 'gl');
+  }
+
+  /* ================== UI (DOM) ================== */
+  function construirUI() {
+    btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'as-btn';
+    btn.setAttribute('aria-label', 'Abrir asistente de Sagomu');
+    btn.innerHTML = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>';
+
+    panel = document.createElement('div');
+    panel.className = 'as-panel';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-label', 'Chat con los asistentes de Sagomu');
+    panel.hidden = true;
+    panel.innerHTML =
+      '<div class="as-head">' +
+        '<span class="as-avatar" aria-hidden="true">🤖</span>' +
+        '<span class="as-head-txt"><strong>Asistentes Sagomu</strong><small>' + PERSONAS.bd.nombre + ' &amp; ' + PERSONAS.gl.nombre + '</small></span>' +
+        '<button type="button" class="as-close" aria-label="Cerrar asistente">&times;</button>' +
+      '</div>' +
+      '<div class="as-msgs" aria-live="polite"></div>' +
+      '<form class="as-form">' +
+        '<input type="text" class="as-input" placeholder="Escribe tu pregunta…" autocomplete="off" aria-label="Escribe tu pregunta" />' +
+        '<button type="submit" class="as-send" aria-label="Enviar">➤</button>' +
+      '</form>';
+
+    document.body.appendChild(btn);
+    document.body.appendChild(panel);
+    msgs = $('.as-msgs', panel);
+    input = $('.as-input', panel);
+
+    btn.addEventListener('click', abrir);
+    $('.as-close', panel).addEventListener('click', cerrar);
+
+    $('.as-form', panel).addEventListener('submit', (e) => {
+      e.preventDefault();
+      const txt = input.value.trim();
+      if (!txt) return;
+      const u = document.createElement('div');
+      u.className = 'asb asb-user';
+      u.innerHTML = '<p>' + txt.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</p>';
+      msgs.appendChild(u);
+      msgs.scrollTop = msgs.scrollHeight;
+      input.value = '';
+      limpiarChips();
+      quienHabla = 'user';
+      setTimeout(() => interpretar(txt), 350);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && abierto && !document.querySelector('.modal.is-open')) cerrar();
+    });
+  }
+
+  function abrir() {
+    panel.hidden = false;
+    requestAnimationFrame(() => panel.classList.add('is-open'));
+    abierto = true;
+    btn.setAttribute('aria-label', 'Cerrar asistente');
+    if (!sessionStorage.getItem('asistente-saludo')) {
+      sessionStorage.setItem('asistente-saludo', '1');
+      menuPrincipal(false);
+    } else {
+      menuPrincipal(true);
+    }
+    setTimeout(() => input.focus(), 300);
+  }
+  function cerrar() {
+    panel.classList.remove('is-open');
+    abierto = false;
+    btn.setAttribute('aria-label', 'Abrir asistente de Sagomu');
+    setTimeout(() => { panel.hidden = true; }, 280);
+  }
+
+  /* ================== INIT ================== */
+  function init() {
+    construirUI();
+    cargarCatalogo().catch(() => {
+      escribir('Ups, no pude cargar el catálogo en este momento 😔', [
+        { label: '💬 Hablar con un asesor', fn: asesor, eco: '💬 Hablar con un asesor' }
+      ], 'bd');
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
