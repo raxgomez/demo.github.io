@@ -29,6 +29,7 @@
   let paquete = [];        // certs del cotizador
   let btn = null, panel = null, msgs = null, input = null, abierto = false;
   let quienHabla = null;   // último emisor (para la etiqueta de nombre)
+  let activo = null;       // asistente de la sesión: lo define la primera pregunta; luego no cambia
 
   const $ = (sel, ctx) => (ctx || document).querySelector(sel);
   const $$ = (sel, ctx) => [...(ctx || document).querySelectorAll(sel)];
@@ -143,9 +144,12 @@
 
   function limpiarChips() { $$('.as-chips', msgs).forEach((c) => c.remove()); }
 
-  function escribir(html, listaChips, quien) {
-    // indicador de "escribiendo…" y luego burbuja + chips (quien: 'bd' | 'gl')
-    const s = quien || 'bd';
+  function escribir(html, listaChips, quien, noLock) {
+    // indicador de "escribiendo…" y luego burbuja + chips.
+    // El saludo NO fija al asistente: lo fija la PRIMERA pregunta del visitante
+    // (promoción/atención → Glor-IA · técnico → Bot-dinez) y luego no cambia.
+    const s = activo || quien || 'bd';
+    if (!noLock) activo = s;
     const t = document.createElement('div');
     t.className = 'as-typing' + (s === 'gl' ? ' as-typing-gl' : '');
     t.innerHTML = '<span></span><span></span><span></span>';
@@ -168,16 +172,18 @@
   }
 
   /* ================== FLUJOS ================== */
-  function menuPrincipal(corto) {
+  function menuPrincipal(corto, saludoDe) {
     paquete = [];
     if (corto) {
-      escribir('¿En qué te ayudo ahora? 🙂', MENU_CHIPS, 'gl');
+      escribir('¿En qué te ayudo ahora? 🙂', MENU_CHIPS, activo || saludoDe || 'gl', !activo);
     } else {
-      escribir('¡Hola! 👋 Soy <strong>' + PERSONAS.bd.nombre + '</strong>, el asistente técnico de Sagomu. Te ayudo con precios, promos, vigencias y el proceso para certificarte. ¿Por dónde empezamos?', null, 'bd');
-      setTimeout(() => {
-        burbuja('¡Y yo soy la <strong>' + PERSONAS.gl.nombre + '</strong>! 💜 Cuando se trata de promos y atención, yo tomo el teclado.');
-        chips(MENU_CHIPS, 200);
-      }, 900);
+      // saluda UN solo asistente, elegido al azar; la primera pregunta del visitante
+      // decide quién atiende el resto de la conversación
+      const s = saludoDe || 'bd';
+      const saludo = s === 'bd'
+        ? '¡Hola! 👋 Soy el <strong>' + PERSONAS.bd.nombre + '</strong>, asistente técnico de Sagomu: precios, catálogo, cotizador de paquetes y el proceso para certificarte. ¿Por dónde empezamos?'
+        : '¡Hola! 💜 Soy la <strong>' + PERSONAS.gl.nombre + '</strong>, de Sagomu. Te ayudo con promos, horarios y todo lo que necesitas para certificarte. ¿Qué te muestro?';
+      escribir(saludo, MENU_CHIPS, s, true);
     }
   }
   const MENU_CHIPS = [
@@ -206,7 +212,8 @@
     }
     const precios = [...new Set(exs.map((c) => c.costoTxt))];
     const precioTxt = precios.length === 1 ? precios[0] : precios.join(' / ');
-    escribir('<strong>' + f + '</strong> — todas a <strong class="as-precio">' + precioTxt + '</strong> (IVA incluido ✔). ¿Cuál ves?',
+    const listaTxt = exs.length <= 6 ? '<br>' + exs.map((c) => '• ' + c.corto).join('<br>') : '';
+    escribir('<strong>' + f + '</strong> — ' + (exs.length > 1 ? 'todas a ' : '') + '<strong class="as-precio">' + precioTxt + '</strong> (IVA incluido ✔)' + listaTxt + '<br>¿Cuál te interesa?',
       exs.map((c) => ({ label: c.corto, fn: () => ficha(c), eco: c.corto }))
         .concat([{ label: '⬅️ Otra familia', fn: preciosFamilias, eco: '⬅️ Otra familia' }]), 'bd');
   }
@@ -310,6 +317,37 @@
   ];
   let fueraIdx = 0;
 
+  // Alias por familia: tokens que la gente escribe en frases completas
+  const ALIAS_FAMILIA = {
+    'Microsoft Office': ['microsoft office', 'office', 'microsoft', 'word', 'excel', 'powerpoint', 'outlook', 'access'],
+    'Adobe': ['adobe', 'photoshop', 'illustrator', 'indesign'],
+    'Autodesk': ['autodesk', 'autocad', '3ds max', 'fusion 360', 'fusion'],
+    'Unity': ['unity'],
+    'Swift (Apple)': ['swift', 'apple'],
+    'Cisco': ['cisco', 'ccst'],
+    'IC3': ['ic3'],
+    'IT Specialist': ['it specialist', 'it especialista'],
+    'PMI': ['pmi', 'project management'],
+    'Intuit': ['intuit'],
+    'Meta': ['meta'],
+    'ESB': ['esb', 'entrepreneurship'],
+    'Skills For Business': ['skills for business', 'skills', 'generative ai', 'professional communication'],
+    'English for IT': ['english for it', 'english'],
+    'Microsoft Educator': ['educator', 'mce']
+  };
+  function escapeRE(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  function mencionanFamilia(t) {
+    for (const [fam, alias] of Object.entries(ALIAS_FAMILIA)) {
+      if (!familias().includes(fam)) continue;
+      if (alias.some((a) => new RegExp('\\b' + escapeRE(a) + '\\b', 'i').test(t))) return fam;
+    }
+    return null;
+  }
+  function mencionanExamen(t) {
+    // nombre corto como token dentro de la frase (p. ej. "excel", "ccst cybersecurity")
+    return cat.find((x) => new RegExp('\\b' + escapeRE(x.corto.toLowerCase()) + '\\b', 'i').test(t)) || null;
+  }
+
   function asesor() {
     abrirWA('Hola, vengo del sitio de Sagomu y quiero hablar con un asesor.');
   }
@@ -317,22 +355,22 @@
   function interpretar(texto) {
     const t = texto.toLowerCase();
     if (/hola|buenas|hey|qué tal|que tal/.test(t)) { menuPrincipal(true); return; }
-    if (/precio|cuesta|costo|cuánto|cuanto/.test(t)) { preciosFamilias(); return; }
+    // examen o familia mencionados por nombre dentro de la frase (prioridad máxima)
+    const ex = mencionanExamen(t);
+    if (ex) { ficha(ex); return; }
+    const fam = mencionanFamilia(t);
+    if (fam) { preciosFamilia(fam); return; }
     if (/promo|descuento|paquete|barato|oferta/.test(t)) { promoIntro(); return; }
     if (/vigencia|vence|caduca|voucher|cuánto dura|cuanto dura/.test(t)) { vigencias(); return; }
     if (/cómo aplico|como aplico|proceso|pasos|registro|inscrib|certificarme/.test(t)) { comoAplico(); return; }
     if (/horario|atienden|abiertos|atención|atencion/.test(t)) { faqResp('horarios'); return; }
-    if (/línea|linea|en casa|online|remoto|dónde|donde|ubicad|oficina|presencial/.test(t)) { faqResp('enlinea'); return; }
+    if (/en línea|en linea|online|en casa|remoto|dónde están|dónde se|dónde aplic|dónde present|ubicad|oficina|dirección|direccion|presencial/.test(t)) { faqResp('enlinea'); return; }
     if (/aprueb|reprobr|reintento|reinteg|fallé|falle|no pasé|no pase/.test(t)) { faqResp('noaprobe'); return; }
     if (/factur/.test(t)) { escribir('Lo de la facturación te la resuelve el equipo humano en un minuto 🧾', [{ label: '💬 Preguntar por WhatsApp', fn: () => abrirWA('Hola, vengo del sitio de Sagomu. ¿Manejan facturación? Quisiera información.'), eco: '💬 Preguntar por WhatsApp' }, { label: '🏠 Menú', fn: () => menuPrincipal(true), eco: '🏠 Menú' }], 'gl'); return; }
     if (/asesor|humano|persona|hablar|contact|whatsapp|whats/.test(t)) { asesor(); return; }
     if (/faq|pregunta|duda/.test(t)) { faqMenu(); return; }
-    // ¿mencionó un examen o familia por nombre?
-    if (t.length >= 4) {
-      const c = cat.find((x) => x.corto.toLowerCase().includes(t) || x.nombre.toLowerCase().includes(t))
-        || cat.find((x) => x.familia.toLowerCase().includes(t));
-      if (c) { ficha(c); return; }
-    }
+    // información general del catálogo
+    if (/informaci|info\b|catalogo|catálogo|certificaci/.test(t)) { preciosFamilias(); return; }
     escribir(FUERA[fueraIdx++ % FUERA.length], [
       { label: '💵 Ver precios', fn: preciosFamilias, eco: '💵 Ver precios' },
       { label: '🎁 Promo por paquetes', fn: promoIntro, eco: '🎁 Promo por paquetes' },
@@ -400,7 +438,7 @@
     btn.setAttribute('aria-label', 'Cerrar asistente');
     if (!sessionStorage.getItem('asistente-saludo')) {
       sessionStorage.setItem('asistente-saludo', '1');
-      menuPrincipal(false);
+      menuPrincipal(false, Math.random() < 0.5 ? 'bd' : 'gl');
     } else {
       menuPrincipal(true);
     }
