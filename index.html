@@ -1,235 +1,689 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sagomu | Futuro Tecnológico</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Centro Certificador Sagomu | Exámenes oficiales Pearson VUE &amp; Certiport</title>
+  <meta name="description" content="El Centro Certificador Sagomu es sede oficial de exámenes Pearson VUE y Certiport. Presenta tus exámenes oficiales y prepara cada certificación con temarios actualizados de Microsoft, Adobe, Cisco, Autodesk y más." />
+  <meta name="theme-color" content="#0F0F1A" />
+  <meta property="og:title" content="Centro Certificador Sagomu | Exámenes oficiales Pearson VUE & Certiport" />
+  <meta property="og:description" content="Certifícate con validez internacional. Exámenes oficiales y temarios actualizados con el respaldo de un centro autorizado." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="es_ES" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%236C5CE7'/%3E%3Ctext x='16' y='22' font-family='Poppins,sans-serif' font-size='17' font-weight='800' fill='white' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E" />
+
+  <!-- Anti-FOUC: theme init BEFORE stylesheet -->
+  <script>
+    (function () {
+      try {
+        var guardado = localStorage.getItem('tema-preferido');
+        var hora = new Date().getHours();
+        var porHora = (hora >= 19 || hora < 7) ? 'dark' : 'light';
+        var tema = (guardado === 'light' || guardado === 'dark') ? guardado : porHora;
+        document.documentElement.setAttribute('data-theme', tema);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=20261120f" />
 </head>
 <body>
+  <!-- ===== SVG ICON SPRITE (inline, themeable via currentColor) ===== -->
+  <svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 6"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+    <symbol id="i-quote" viewBox="0 0 24 24"><path fill="currentColor" d="M7.5 6C5 6 3 8 3 10.5S5 15 7.5 15c0 2-1.5 3.5-3.5 4v2c3.5-.5 6.5-3.5 6.5-7.5V10.5C10.5 8 8.5 6 7.5 6zm10 0C15 6 13 8 13 10.5S15 15 17.5 15c0 2-1.5 3.5-3.5 4v2c3.5-.5 6.5-3.5 6.5-7.5V10.5C20.5 8 18.5 6 17.5 6z"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path fill="currentColor" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></g></symbol>
+    <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/></symbol>
+    <symbol id="i-fb" viewBox="0 0 24 24"><path fill="currentColor" d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></symbol>
+    <symbol id="i-ig" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.43.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.43.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.43-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.43-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16zm0 1.62c-3.15 0-3.5.01-4.74.07-.9.04-1.39.19-1.71.32-.43.17-.74.37-1.06.69-.32.32-.52.63-.69 1.06-.13.32-.28.81-.32 1.71-.06 1.24-.07 1.59-.07 4.74s.01 3.5.07 4.74c.04.9.19 1.39.32 1.71.17.43.37.74.69 1.06.32.32.63.52 1.06.69.32.13.81.28 1.71.32 1.24.06 1.59.07 4.74.07s3.5-.01 4.74-.07c.9-.04 1.39-.19 1.71-.32.43-.17.74-.37 1.06-.69.32-.32.52-.63.69-1.06.13-.32.28-.81.32-1.71.06-1.24.07-1.59.07-4.74s-.01-3.5-.07-4.74c-.04-.9-.19-1.39-.32-1.71a2.85 2.85 0 0 0-.69-1.06 2.85 2.85 0 0 0-1.06-.69c-.32-.13-.81-.28-1.71-.32-1.24-.06-1.59-.07-4.74-.07zm0 2.76a5.3 5.3 0 1 1 0 10.6 5.3 5.3 0 0 1 0-10.6zm0 1.62a3.68 3.68 0 1 0 0 7.36 3.68 3.68 0 0 0 0-7.36zm5.5-2.04a1.24 1.24 0 1 1 0 2.48 1.24 1.24 0 0 1 0-2.48z"/></symbol>
+    <symbol id="i-li" viewBox="0 0 24 24"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></g></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></g></symbol>
+    <symbol id="i-rocket" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M5 15c-2 1-3 4-3 4s3-1 4-3M14.5 9.5l-5 5M9 9l3-7c3 0 9 3 9 9 0 3-7 3-7 3l-3-3-3 .5L9 9z"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6l8-3z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8.5 12l2.5 2.5L16 9.5"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M7 16V9M12 16V5M17 16v-4"/></g></symbol>
+    <symbol id="i-video" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M3 5h12v14H3zM15 9l6-3v12l-6-3z"/></symbol>
+    <symbol id="i-quiz" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9a3 3 0 1 1 4.5 2.6c-.9.5-1.5 1-1.5 2v.4"/><circle cx="12" cy="18" r="0.6" fill="currentColor"/></g></symbol>
+    <symbol id="i-headset" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M4 13a8 8 0 0 1 16 0M4 13v4a2 2 0 0 0 2 2h1v-6H6a2 2 0 0 0-2 2zM20 13v4a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2zM18 19a4 4 0 0 1-4 3h-2"/></symbol>
+    <symbol id="i-grad" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M2 9l10-4 10 4-10 4-10-4zM6 11v5c0 1 3 2 6 2s6-1 6-2v-5"/></symbol>
+    <symbol id="i-target2" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></g></symbol>
+  </svg>
 
-    <!-- NAVEGACIÓN -->
-    <nav>
-        <div class="logo">SAGOMU</div>
-        <div class="nav-links">
-            <a href="#inicio">Inicio</a>
-            <a href="#tecnología">Tecnología</a>
-            <a href="#cursos">Cursos</a>
-            <a href="#contacto">Contacto</a>
-        </div>
-        <button class="hamburger-menu" id="hamburgerMenu">
-            <span></span>
-            <span></span>
-            <span></span>
+  <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
+
+  <!-- ============================= 1. HEADER ============================= -->
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <a href="#top" class="brand hover-rotate" aria-label="Centro Certificador Sagomu, inicio">
+        <span class="brand-mark" aria-hidden="true">S</span>
+        <span class="brand-text">Centro Certificador Sagomu</span>
+      </a>
+
+      <nav class="main-nav" id="main-nav" aria-label="Navegación principal">
+        <button class="nav-close" id="nav-close" aria-label="Cerrar menú">
+          <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>
         </button>
-    </nav>
+        <ul class="nav-list">
+          <li><a href="#top" class="nav-link">Inicio</a></li>
+          <li><a href="#certificaciones" class="nav-link">Certificaciones</a></li>
+          <li><a href="#como-funciona" class="nav-link">¿Cómo funciona?</a></li>
+          <li><a href="#about" class="nav-link">Nosotros</a></li>
+          <!-- <li><a href="#blog" class="nav-link">Blog</a></li> -->
+          <li><a href="#contacto" class="nav-link">Contacto</a></li>
+        </ul>
+      </nav>
 
-    <!-- HERO SECTION -->
-    <section class="hero" id="inicio">
+      <div class="header-actions">
+        <button id="theme-toggle" class="icon-btn theme-toggle" aria-label="Cambiar tema (claro/oscuro)" title="Cambiar tema">
+          <svg class="icon icon-sun" aria-hidden="true"><use href="#i-sun"/></svg>
+          <svg class="icon icon-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+        </button>
+        <a href="#agendar" class="btn btn-primary header-cta hover-lift">
+          Agendar Examen
+          <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
+        </a>
+        <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-nav">
+          <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
+        </button>
+      </div>
+    </div>
+    <span class="header-progress" id="scroll-progress" aria-hidden="true"></span>
+  </header>
+
+  <!-- backdrop for mobile nav -->
+  <div class="nav-backdrop" id="nav-backdrop" hidden></div>
+
+  <main id="contenido">
+
+    <!-- ============================= 2. HERO ============================= -->
+    <section class="hero section" aria-labelledby="hero-title">
+      <div class="hero-bg" aria-hidden="true">
+        <span class="blob blob-1 anim-float"></span>
+        <span class="blob blob-2 anim-rotate-slow"></span>
+      </div>
+      <div class="container hero-grid">
         <div class="hero-content">
-            <h1>
-                <br/>
-                <span>Sagomu</span>
-                Formación tecnológica especializada para instituciones y empresas
-            </h1>
-            <p>
-                Diseñamos programas de capacitación en Unity, ciberseguridad, Arduino, realidad virtual e impresión 3D para universidades, maestrías y empresas que buscan talento con habilidades reales en tecnología aplicada.
-            </p>
-            <button class="btn-main">Conocer programas</button>
-        </div>
-    </section>
+          <span class="kicker reveal"><span class="kicker-dot"></span>Centro Certificador Autorizado de Certiport</span>
+          <h1 id="hero-title" class="hero-title reveal" style="transition-delay:.08s">
+            Certifícate con <span class="text-accent">validez internacional</span> con el Centro Certificador Sagomu
+          </h1>
+          <p class="hero-text reveal" style="transition-delay:.16s">
+            Presenta tus exámenes oficiales con el respaldo de un centro autorizado y prepara cada certificación con temarios
+            actualizados de Microsoft, Adobe, Cisco, Autodesk y más.
+          </p>
 
-    <!-- SPLIT SECTION (ESTILO REFERENCIA) -->
-    <section class="split-section" id="tecnología">
-        <div class="split-image img-unity"></div>
-        <div class="split-content">
-            <span class="section-tag">Desarrollo & Realidad</span>
-            <h2 class="section-title">Inmersión Total Unity 3D</h2>
-            <p>
-                Especialistas en desarrollo de videojuegos y aplicaciones inmersivas. Domina Unity en todas sus dimensiones: 2D, 3D, Realidad Aumentada (AR) y Realidad Virtual (VR).
-            </p>
-            <a href="#cursos">
-                EXPLORAR CURSOS DE UNITY <i class="fas fa-arrow-right"></i>
+          <div class="hero-actions reveal" style="transition-delay:.24s">
+            <a href="#certificaciones" class="btn btn-primary btn-lg hover-lift">
+              Ver certificaciones
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
             </a>
+            <button class="btn btn-outline btn-lg hover-lift" id="open-video-hero" aria-haspopup="dialog" aria-controls="video-modal">
+              <span class="play-mini" aria-hidden="true"><svg class="icon"><use href="#i-play"/></svg></span>
+              ¿Cómo certificarme?
+            </button>
+          </div>
+
+          <dl class="hero-counters reveal" style="transition-delay:.32s">
+            <div class="counter-item">
+              <dt class="counter-num" data-count-to="75" data-count-suffix="+">0</dt>
+              <dd>Certificaciones disponibles</dd>
+            </div>
+            <div class="counter-item">
+              <dt class="counter-num" data-count-to="14">0</dt>
+              <dd>Áreas de conocimiento</dd>
+            </div>
+            <div class="counter-item">
+              <dt class="counter-num" data-count-to="1000" data-count-prefix="+" data-count-format="k">0</dt>
+              <dd>Estudiantes certificados</dd>
+            </div>
+          </dl>
         </div>
+
+        <div class="hero-media reveal-zoom" style="transition-delay:.2s">
+          <div class="hero-image hover-zoom">
+            <img src="assets/img/hero-main.jpg?v=20261120e" alt="Mano dibujando una bombilla geométrica multicolor luminosa sobre papel, símbolo de creatividad e ideas innovadoras" width="1000" height="1200" />
+          </div>
+        </div>
+      </div>
     </section>
 
-    <!-- GRID CARACTERÍSTICAS -->
-    <div class="features-grid">
-        <div class="feature-box">
-            <i class="fas fa-vr-cardboard feature-icon"></i>
-            <h3>AR / VR</h3>
-            <p>Inmersión digital avanzada</p>
+    <!-- ============================= 3. FEATURES ============================= -->
+    <section class="features section" aria-labelledby="features-title">
+      <div class="features-bg" aria-hidden="true"><span class="blob blob-soft anim-rotate-slow"></span></div>
+      <div class="container">
+        <header class="section-head center reveal">
+          <span class="kicker center"><span class="kicker-dot"></span>Características clave</span>
+          <h2 id="features-title" class="section-title">Por qué certificarte con el Centro Certificador Sagomu</h2>
+        </header>
+        <div class="features-grid">
+          <article class="feature-card reveal hover-lift" style="transition-delay:0s">
+            <span class="feature-icon hover-rotate"><svg class="icon"><use href="#i-book"/></svg></span>
+            <h3 class="feature-title">Temarios oficiales</h3>
+            <p class="feature-text">Contenidos basados en los exámenes reales de Pearson VUE y Certiport, actualizados constantemente.</p>
+          </article>
+          <article class="feature-card reveal hover-lift" style="transition-delay:.1s">
+            <span class="feature-icon hover-rotate"><svg class="icon"><use href="#i-grad"/></svg></span>
+            <h3 class="feature-title">Certificado inmediato</h3>
+            <p class="feature-text">Recibe tu certificado digital oficial al aprobar el examen, con validez internacional.</p>
+          </article>
+          <article class="feature-card reveal hover-lift" style="transition-delay:.2s">
+            <span class="feature-icon hover-rotate"><svg class="icon"><use href="#i-shield"/></svg></span>
+            <h3 class="feature-title">Acompañamiento hasta tu aprobación</h3>
+            <p class="feature-text">Metodología enfocada en resultados: simulacros, seguimiento y refuerzo hasta alcanzar la nota de aprobación.</p>
+          </article>
         </div>
-        <div class="feature-box">
-            <i class="fas fa-shield-alt feature-icon"></i>
-            <h3>Ciberseguridad</h3>
-            <p>Protección de datos</p>
+      </div>
+    </section>
+
+    <!-- ============================= 4. ABOUT ============================= -->
+    <section class="about section" id="about" aria-labelledby="about-title">
+      <div class="container about-grid">
+        <div class="about-media reveal-left">
+          <div class="about-image hover-zoom">
+            <img src="assets/img/about-main.jpg" alt="Laboratorio de computación del Centro Certificador Sagomu" width="500" height="550" />
+          </div>
+          <span class="about-blob blob anim-float"></span>
+          <span class="about-blob blob anim-float" style="animation-delay:1.2s;top:auto;bottom:-30px;right:-20px"></span>
         </div>
-        <div class="feature-box">
-            <i class="fas fa-microchip feature-icon"></i>
-            <h3>Arduino</h3>
-            <p>Internet de las cosas</p>
+        <div class="about-content reveal-right">
+          <span class="kicker"><span class="kicker-dot"></span>Sobre nosotros</span>
+          <h2 id="about-title" class="section-title">Tu centro certificador de confianza</h2>
+          <p class="section-text">
+            Somos un centro autorizado oficial de <strong>Pearson VUE</strong> y <strong>Certiport</strong>.
+            Acompañamos a cada estudiante desde la inscripción hasta el día del examen, con temarios basados en
+            los exámenes reales y un seguimiento cercano de tu progreso.
+          </p>
+          <ul class="check-list">
+            <li class="reveal"><span class="check-ic" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span> Centro autorizado oficial por Pearson VUE y Certiport.</li>
+            <li class="reveal" style="transition-delay:.1s"><span class="check-ic" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span> Temarios basados en los exámenes reales de Pearson VUE y Certiport.</li>
+          </ul>
+          <dl class="about-counters">
+            <div class="counter-item">
+              <dt class="counter-num" data-count-to="10" data-count-suffix="+">0</dt>
+              <dd>Años de experiencia</dd>
+            </div>
+            <div class="counter-item">
+              <dt class="counter-num" data-count-to="1000" data-count-format="k" data-count-suffix="+">0</dt>
+              <dd>Estudiantes</dd>
+            </div>
+          </dl>
+          <a href="#como-funciona" class="btn btn-primary hover-lift">Conoce más
+            <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
+          </a>
         </div>
-        <div class="feature-box">
-            <i class="fas fa-cube feature-icon"></i>
-            <h3>Blender</h3>
-            <p>Modelado 3D Profesional</p>
+      </div>
+    </section>
+
+    <!-- ============================= 5. MARQUEE ============================= -->
+    <section class="marquee-section" aria-label="Características destacadas" id="como-funciona">
+      <div class="marquee" role="presentation">
+        <div class="marquee-track">
+          <span class="marquee-item">Centro Certificador Sagomu</span><span class="marquee-sep" aria-hidden="true"></span>
+          <span class="marquee-item">Centro Certificador Sagomu</span><span class="marquee-sep" aria-hidden="true"></span>
+          <span class="marquee-item">Centro Certificador Sagomu</span><span class="marquee-sep" aria-hidden="true"></span>
+          <span class="marquee-item">Centro Certificador Sagomu</span><span class="marquee-sep" aria-hidden="true"></span>
+          <!-- duplicate for seamless loop -->
+          <span class="marquee-item">Centro Certificador Sagomu</span><span class="marquee-sep" aria-hidden="true"></span>
+          <span class="marquee-item">Centro Certificador Sagomu</span><span class="marquee-sep" aria-hidden="true"></span>
+          <span class="marquee-item">Centro Certificador Sagomu</span><span class="marquee-sep" aria-hidden="true"></span>
+          <span class="marquee-item">Centro Certificador Sagomu</span><span class="marquee-sep" aria-hidden="true"></span>
         </div>
+      </div>
+    </section>
+
+    <!-- ============================= 6. CERTIFICACIONES ============================= -->
+    <section class="courses section" id="certificaciones" aria-labelledby="courses-title">
+      <div class="container">
+        <header class="section-head center reveal">
+          <span class="kicker center"><span class="kicker-dot"></span>Nuestras certificaciones</span>
+          <h2 id="courses-title" class="section-title">Catálogo de certificaciones oficiales</h2>
+          <p class="section-sub">Explora los temarios completos y presenta tu examen oficial con el respaldo de un centro autorizado.</p>
+        </header>
+
+        <div class="courses-browser reveal" id="courses-browser">
+          <div class="brand-rail" id="brand-rail" role="tablist" aria-label="Certificaciones por marca"></div>
+          <div class="courses-grid" id="courses-grid" aria-live="polite" aria-busy="true">
+            <p class="courses-loading">Cargando certificaciones…</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= 7. WHY CHOOSE US ============================= -->
+    <section class="why section" aria-labelledby="why-title">
+      <div class="container why-grid">
+        <div class="why-content reveal-left">
+          <span class="kicker"><span class="kicker-dot"></span>¿Por qué elegirnos?</span>
+          <h2 id="why-title" class="section-title">Enfoques de aprendizaje efectivos</h2>
+          <p class="section-text">Combinamos preparación teórica, práctica en escenarios reales y el respaldo de rendir el examen oficial en el mismo centro.</p>
+          <ul class="why-list">
+            <li class="reveal">
+              <span class="why-ic hover-rotate" aria-hidden="true"><svg class="icon"><use href="#i-shield"/></svg></span>
+              <div><h3 class="why-name">Examen oficial</h3><p>Presenta tu examen oficial en línea o en la modalidad que acordemos contigo, con el respaldo de un centro autorizado.</p></div>
+            </li>
+            <li class="reveal" style="transition-delay:.08s">
+              <span class="why-ic hover-rotate" aria-hidden="true"><svg class="icon"><use href="#i-chart"/></svg></span>
+              <div><h3 class="why-name">Seguimiento de progreso</h3><p>Seguimiento de tu preparación y recomendaciones de refuerzo para el examen.</p></div>
+            </li>
+            <!-- OCULTO (modo solo exámenes): <li class="reveal" style="transition-delay:.16s">
+              <span class="why-ic hover-rotate" aria-hidden="true"><svg class="icon"><use href="#i-video"/></svg></span>
+              <div><h3 class="why-name">Clases en vivo</h3><p>Sesiones con instructores certificados y resolución de dudas en tiempo real.</p></div>
+            </li> -->
+            <li class="reveal" style="transition-delay:.24s">
+              <span class="why-ic hover-rotate" aria-hidden="true"><svg class="icon"><use href="#i-quiz"/></svg></span>
+              <div><h3 class="why-name">Simulacros de examen</h3><p>Práctica con el mismo formato y dificultad del examen oficial.</p></div>
+            </li>
+          </ul>
+          <div class="why-highlight reveal" style="transition-delay:.32s">
+            <span class="why-star anim-pulse" aria-hidden="true"><svg class="icon"><use href="#i-star"/></svg></span>
+            <div><strong>Soporte 24/7</strong> de nuestro equipo</div>
+          </div>
+          <a href="#agendar" class="btn btn-outline hover-lift">Más información
+            <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
+          </a>
+        </div>
+        <div class="why-media reveal-zoom">
+          <div class="why-image hover-zoom">
+            <img src="assets/img/why-choose-main.jpg" alt="Oficina de atención del Centro Certificador Sagomu" width="500" height="550" />
+          </div>
+          <div class="why-rating anim-float">
+            <span class="why-rating-ring anim-rotate-slow" aria-hidden="true"></span>
+            <div class="why-rating-inner">
+              <span class="counter-num" data-count-to="10" data-count-suffix="+">0</span>
+              <span class="why-rating-label">Años de experiencia</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= 8. VIDEO / OFFER ============================= -->
+    <section class="video-offer section" aria-labelledby="offer-title">
+      <div class="container vo-grid">
+        <div class="vo-video reveal-zoom">
+          <div class="video-thumb">
+            <img src="assets/img/certifica-mas.jpg" alt="Lista de verificación de certificaciones con una casilla marcada por un lápiz rojo" width="1000" height="1000" />
+          </div>
+        </div>
+        <div class="offer-card reveal-zoom hover-lift" id="offer-tilt">
+          <span class="offer-badge anim-pulse" aria-hidden="true">Hasta 10% off</span>
+          <span class="kicker">Promoción especial</span>
+          <h2 id="offer-title" class="offer-title">Certifica más, paga menos</h2>
+          <p class="offer-text">Inscríbete a 2 o 3 certificaciones juntas y ahorra en tus exámenes oficiales. Válido para cualquier combinación.</p>
+          <div class="offer-tiers">
+            <div class="offer-tier">
+              <span class="tier-desc">2 certificaciones juntas</span>
+              <span class="tier-discount">5% off</span>
+            </div>
+            <div class="offer-tier">
+              <span class="tier-desc">3 certificaciones juntas</span>
+              <span class="tier-discount">10% off</span>
+            </div>
+          </div>
+          <p class="offer-example">Ej.: 2 de Unity (Artist + Programmer) → 5% off · las 3 (Artist, Programmer y VR Developer) → 10% off.</p>
+          <a href="#agendar" class="btn btn-primary btn-lg hover-lift">Aprovechar promoción
+            <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= 9. INSTRUCTORES ============================= -->
+<!-- OCULTO (modo solo exámenes): para reactivar Instructores, borra desde esta línea hasta el marcador de cierre /OCULTO Instructores
+    <section class="team section" id="team" aria-labelledby="team-title">
+      <div class="container">
+        <header class="section-head center reveal">
+          <span class="kicker center"><span class="kicker-dot"></span>Instructores</span>
+          <h2 id="team-title" class="section-title">Aprende con instructores certificados</h2>
+        </header>
+        <div class="team-grid">
+          <article class="team-card reveal hover-lift" style="transition-delay:0s">
+            <div class="team-photo hover-zoom">
+              <img src="assets/img/instructor-1.svg" alt="Carlos Méndez, instructor Adobe" width="300" height="350" />
+              <div class="team-social">
+                <a href="#" aria-label="LinkedIn de Carlos Méndez"><svg class="icon"><use href="#i-li"/></svg></a>
+                <a href="#" aria-label="Instagram de Carlos Méndez"><svg class="icon"><use href="#i-ig"/></svg></a>
+                <a href="#" aria-label="X de Carlos Méndez"><svg class="icon"><use href="#i-x"/></svg></a>
+              </div>
+            </div>
+            <div class="team-body">
+              <h3 class="team-name">Carlos Méndez</h3>
+              <p class="team-role">Instructor Adobe · Diseño</p>
+              <div class="team-rating"><span class="stars" aria-hidden="true"><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg></span><span>4.9</span></div>
+            </div>
+          </article>
+          <article class="team-card reveal hover-lift" style="transition-delay:.1s">
+            <div class="team-photo hover-zoom">
+              <img src="assets/img/instructor-2.svg" alt="Laura Restrepo, instructora Microsoft Office" width="300" height="350" />
+              <div class="team-social">
+                <a href="#" aria-label="LinkedIn de Laura Restrepo"><svg class="icon"><use href="#i-li"/></svg></a>
+                <a href="#" aria-label="Instagram de Laura Restrepo"><svg class="icon"><use href="#i-ig"/></svg></a>
+                <a href="#" aria-label="X de Laura Restrepo"><svg class="icon"><use href="#i-x"/></svg></a>
+              </div>
+            </div>
+            <div class="team-body">
+              <h3 class="team-name">Laura Restrepo</h3>
+              <p class="team-role">Instructora Microsoft Office</p>
+              <div class="team-rating"><span class="stars" aria-hidden="true"><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg></span><span>4.8</span></div>
+            </div>
+          </article>
+          <article class="team-card reveal hover-lift" style="transition-delay:.2s">
+            <div class="team-photo hover-zoom">
+              <img src="assets/img/instructor-3.svg" alt="Andrés Gómez, instructor Cisco y Redes" width="300" height="350" />
+              <div class="team-social">
+                <a href="#" aria-label="LinkedIn de Andrés Gómez"><svg class="icon"><use href="#i-li"/></svg></a>
+                <a href="#" aria-label="Instagram de Andrés Gómez"><svg class="icon"><use href="#i-ig"/></svg></a>
+                <a href="#" aria-label="X de Andrés Gómez"><svg class="icon"><use href="#i-x"/></svg></a>
+              </div>
+            </div>
+            <div class="team-body">
+              <h3 class="team-name">Andrés Gómez</h3>
+              <p class="team-role">Instructor Cisco · Redes</p>
+              <div class="team-rating"><span class="stars" aria-hidden="true"><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg></span><span>4.9</span></div>
+            </div>
+          </article>
+          <article class="team-card reveal hover-lift" style="transition-delay:.3s">
+            <div class="team-photo hover-zoom">
+              <img src="assets/img/instructor-4.svg" alt="Valentina Cruz, instructora Autodesk y ITS" width="300" height="350" />
+              <div class="team-social">
+                <a href="#" aria-label="LinkedIn de Valentina Cruz"><svg class="icon"><use href="#i-li"/></svg></a>
+                <a href="#" aria-label="Instagram de Valentina Cruz"><svg class="icon"><use href="#i-ig"/></svg></a>
+                <a href="#" aria-label="X de Valentina Cruz"><svg class="icon"><use href="#i-x"/></svg></a>
+              </div>
+            </div>
+            <div class="team-body">
+              <h3 class="team-name">Valentina Cruz</h3>
+              <p class="team-role">Instructora Autodesk · ITS</p>
+              <div class="team-rating"><span class="stars" aria-hidden="true"><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg></span><span>5.0</span></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+[[ FIN OCULTO Instructores ]] -->
+
+    <!-- ============================= 10. TESTIMONIOS ============================= -->
+<!-- OCULTO temporalmente: para reactivar Testimonios, borra desde esta línea hasta el marcador de cierre /OCULTO Testimonios
+    <section class="testimonials section" aria-labelledby="testi-title">
+      <div class="container testi-grid">
+        <div class="testi-aside reveal-left">
+          <span class="testi-quote anim-float" aria-hidden="true"><svg class="icon"><use href="#i-quote"/></svg></span>
+          <h2 id="testi-title" class="section-title">Resultados que hablan por sí solos</h2>
+          <p class="section-text">Miles de estudiantes han alcanzado su certificación oficial con la metodología del Centro Certificador Sagomu.</p>
+          <div class="testi-trust">
+            <span class="stars" aria-hidden="true"><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg><svg class="icon star"><use href="#i-star"/></svg></span>
+            <span><strong>+890</strong> valoraciones · <strong>4.9</strong></span>
+          </div>
+        </div>
+        <div class="testi-slider reveal-right" aria-roledescription="carrusel" aria-label="Testimonios de estudiantes">
+          <div class="testi-track" id="testi-track">
+            <figure class="testi-slide">
+              <blockquote>Preparar el examen de Photoshop con el Centro Certificador Sagomu fue directo y claro. Los módulos reflejan exactamente lo que viene en la prueba oficial y rendí en el mismo centro autorizado.</blockquote>
+              <figcaption class="testi-author">
+                <img src="assets/img/testimonial-1.svg" alt="" width="60" height="60" />
+                <div><strong>Mariana López</strong><span>Estudiante de Diseño</span></div>
+              </figcaption>
+            </figure>
+            <figure class="testi-slide">
+              <blockquote>El seguimiento y los simulacros me dieron la confianza que necesitaba. Aprobé Adobe Illustrator al primer intento y ya estoy trabajando con clientes internacionales.</blockquote>
+              <figcaption class="testi-author">
+                <img src="assets/img/testimonial-2.svg" alt="" width="60" height="60" />
+                <div><strong>Sebastián Ruiz</strong><span>Diseñador Gráfico</span></div>
+              </figcaption>
+            </figure>
+            [nota interna: slide 3 (Daniela Torres) quedó fuera en modo solo exámenes]
+          </div>
+          <div class="testi-controls">
+            <button class="testi-btn" id="testi-prev" aria-label="Testimonio anterior">
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+            </button>
+            <div class="testi-dots" id="testi-dots" role="tablist" aria-label="Seleccionar testimonio"></div>
+            <button class="testi-btn" id="testi-next" aria-label="Siguiente testimonio">
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+/OCULTO Testimonios -->
+
+    <!-- ============================= 11. CTA FINAL ============================= -->
+    <section class="cta-final section" id="agendar" aria-labelledby="cta-title">
+      <div class="cta-bg" aria-hidden="true"><span class="blob blob-soft anim-rotate-slow"></span></div>
+      <div class="container cta-inner reveal-zoom">
+        <span class="cta-arrow anim-float" aria-hidden="true"><svg class="icon"><use href="#i-arrow"/></svg></span>
+        <h2 id="cta-title" class="cta-title">Prepárate a tu ritmo. <span class="text-accent">Certifícate cuando quieras.</span></h2>
+        <div class="cta-actions">
+          <a href="#" id="cta-whatsapp" class="btn btn-primary btn-lg hover-lift" target="_blank" rel="noopener" hidden>
+            Agendar examen
+            <svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg>
+          </a>
+          <!-- OCULTO (se descontinuó: duplicaba el CTA de WhatsApp; reactivar si se quiere el enlace con valoraciones):
+          <a href="#" id="cta-whatsapp-alt" class="cta-phone" target="_blank" rel="noopener" hidden>
+            <span class="cta-phone-ic anim-pulse" aria-hidden="true"><svg class="icon"><use href="#i-wa"/></svg></span>
+            <span><strong>Escríbenos por WhatsApp</strong><small>Respuesta rápida · 890+ valoraciones · 4.9</small></span>
+          </a>
+          -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= 12. BLOG (OCULTA TEMPORALMENTE — borrar estos marcadores de comentario para reactivar) =============================
+    <section class="blog section" id="blog" aria-labelledby="blog-title">
+      <div class="container">
+        <header class="section-head center reveal">
+          <span class="kicker center"><span class="kicker-dot"></span>Últimas publicaciones</span>
+          <h2 id="blog-title" class="section-title">Insights y guías del blog del Centro Certificador Sagomu</h2>
+        </header>
+        <div class="blog-grid">
+          <article class="blog-card reveal hover-lift" style="transition-delay:0s">
+            <a href="#" class="blog-photo hover-zoom"><img src="assets/img/blog-1.jpg" alt="Cómo prepararte para el examen de Photoshop" width="400" height="250" /><span class="blog-badge">Adobe</span></a>
+            <div class="blog-body">
+              <div class="blog-meta"><span>12 Jul</span><span class="blog-author"><img src="assets/img/testimonial-1.svg" alt="" width="28" height="28" /> Daniela Torres</span></div>
+              <h3 class="blog-title"><a href="#">Cómo prepararte para el examen de Photoshop</a></h3>
+              <a href="#" class="blog-link">Seguir leyendo <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+            </div>
+          </article>
+          <article class="blog-card reveal hover-lift" style="transition-delay:.1s">
+            <a href="#" class="blog-photo hover-zoom"><img src="assets/img/blog-2.jpg" alt="5 errores comunes al certificar en Python" width="400" height="250" /><span class="blog-badge">Programación</span></a>
+            <div class="blog-body">
+              <div class="blog-meta"><span>28 Jun</span><span class="blog-author"><img src="assets/img/testimonial-3.svg" alt="" width="28" height="28" /> Andrés Gómez</span></div>
+              <h3 class="blog-title"><a href="#">5 errores comunes al certificar en Python</a></h3>
+              <a href="#" class="blog-link">Seguir leyendo <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+            </div>
+          </article>
+          <article class="blog-card reveal hover-lift" style="transition-delay:.2s">
+            <a href="#" class="blog-photo hover-zoom"><img src="assets/img/blog-3.jpg" alt="Por qué certificarte con Pearson VUE en 2026" width="400" height="250" /><span class="blog-badge">Certificación</span></a>
+            <div class="blog-body">
+              <div class="blog-meta"><span>10 Jun</span><span class="blog-author"><img src="assets/img/testimonial-2.svg" alt="" width="28" height="28" /> Laura Restrepo</span></div>
+              <h3 class="blog-title"><a href="#">Por qué certificarte con Pearson VUE en 2026</a></h3>
+              <a href="#" class="blog-link">Seguir leyendo <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+    ============================= FIN BLOG OCULTA ============================= -->
+
+    <!-- ============================= 13. PARTNERS ============================= -->
+    <section class="partners section" aria-labelledby="partners-title">
+      <div class="container">
+        <header class="section-head center reveal">
+          <span class="kicker center"><span class="kicker-dot"></span>Nuestros partners</span>
+          <h2 id="partners-title" class="section-title">Certificaciones oficiales</h2>
+          <p class="section-sub">Marcas con las que certificamos oficialmente en el Centro Certificador Sagomu.</p>
+        </header>
+      </div>
+      <div class="partners-marquee reveal">
+        <div class="partners-track" id="partners-track"></div>
+      </div>
+    </section>
+    <!-- ============================= 13. PREGUNTAS FRECUENTES ============================= -->
+    <section class="faq section" id="preguntas-frecuentes" aria-labelledby="faq-title">
+      <div class="container">
+        <header class="section-head center reveal">
+          <span class="kicker center"><span class="kicker-dot"></span>Preguntas frecuentes</span>
+          <h2 id="faq-title" class="section-title">Resolvemos tus dudas</h2>
+          <p class="section-sub">Todo lo que necesitas saber antes de certificarte con nosotros.</p>
+        </header>
+        <div class="faq-list reveal">
+          <details class="faq-item">
+            <summary>¿Cómo me inscribo a un examen o a una preparación?<svg class="icon faq-chev" aria-hidden="true"><use href="#i-arrow-right"/></svg></summary>
+            <p class="faq-a">Escríbenos por WhatsApp: te ayudamos a elegir la certificación adecuada, registramos tu examen oficial y acordamos contigo la modalidad y la fecha que más te convenga.</p>
+          </details>
+          <details class="faq-item">
+            <summary>¿Puedo presentar el examen sin tomar un curso de preparación?<svg class="icon faq-chev" aria-hidden="true"><use href="#i-arrow-right"/></svg></summary>
+            <p class="faq-a">Sí. El examen está abierto para cualquier persona. Si además quieres prepararte, contamos con temarios oficiales, simulacros y seguimiento personalizado.</p>
+          </details>
+          <details class="faq-item">
+            <summary>¿Qué necesito para presentar el examen?<svg class="icon faq-chev" aria-hidden="true"><use href="#i-arrow-right"/></svg></summary>
+            <p class="faq-a">Depende de la modalidad acordada. Para exámenes en línea necesitas una computadora con internet estable, cámara y micrófono, además de una identificación oficial vigente con fotografía y firma (INE o pasaporte). Al agendar te indicamos todos los requisitos de tu examen.</p>
+          </details>
+          <details class="faq-item">
+            <summary>¿Cuánto dura el examen?<svg class="icon faq-chev" aria-hidden="true"><use href="#i-arrow-right"/></svg></summary>
+            <p class="faq-a">Depende de cada certificación: la mayoría dura entre 50 minutos y 2 horas. Al agendar te indicamos la duración exacta de tu examen.</p>
+          </details>
+          <details class="faq-item">
+            <summary>¿Qué pasa si no apruebo el examen?<svg class="icon faq-chev" aria-hidden="true"><use href="#i-arrow-right"/></svg></summary>
+            <p class="faq-a">Puedes reagendar y presentar el examen de nuevo tras un breve periodo de espera (varía según el programa). Contigo armamos un plan de refuerzo enfocado en los temas que más se te dificultaron.</p>
+          </details>
+          <details class="faq-item">
+            <summary>¿El certificado tiene validez oficial?<svg class="icon faq-chev" aria-hidden="true"><use href="#i-arrow-right"/></svg></summary>
+            <p class="faq-a">Sí. Al aprobar recibes el certificado digital oficial emitido directamente por el fabricante (Microsoft, Adobe, Cisco, Unity y más), con validez internacional.</p>
+          </details>
+          <details class="faq-item">
+            <summary>¿Hay descuentos por presentar varias certificaciones?<svg class="icon faq-chev" aria-hidden="true"><use href="#i-arrow-right"/></svg></summary>
+            <p class="faq-a">Sí. Inscríbete a 2 o 3 certificaciones juntas y ahorra en tus exámenes oficiales. Válido para cualquier combinación.</p>
+          </details>
+          <details class="faq-item">
+            <summary>¿Dónde se aplican los exámenes?<svg class="icon faq-chev" aria-hidden="true"><use href="#i-arrow-right"/></svg></summary>
+            <p class="faq-a">Pueden aplicarse en línea, y la modalidad se acuerda contigo al momento de tu registro. Ponte en contacto con nosotros y definimos juntos la mejor manera de presentar tu examen.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= 13.5 VIDEO GUÍA (embebido) ============================= -->
+    <section class="video-guide section" id="video-guia" aria-labelledby="video-guide-title">
+      <div class="container">
+        <header class="section-head center reveal">
+          <span class="kicker center"><span class="kicker-dot"></span>Video guía</span>
+          <h2 id="video-guide-title" class="section-title">¿Cómo certificarte? Paso a paso</h2>
+          <p class="section-sub">Aprende a crear tu cuenta y presentar tu examen oficial en este video.</p>
+        </header>
+        <div class="video-guide-frame reveal">
+          <video src="assets/video/como-certificarme.mp4" controls playsinline preload="metadata"></video>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================= 14. FOOTER ============================= -->
+  <footer class="site-footer" id="contacto">
+    <div class="container footer-grid">
+      <div class="footer-col footer-about">
+        <a href="#top" class="brand footer-brand" aria-label="Centro Certificador Sagomu, inicio">
+          <span class="brand-mark" aria-hidden="true">S</span>
+          <span class="brand-text">Centro Certificador Sagomu</span>
+        </a>
+        <p class="footer-text">Centro certificador oficial Pearson VUE y Certiport. Certifícate con validez internacional con temarios basados en los exámenes reales.</p>
+        <a href="#" id="footer-whatsapp" class="footer-contact" target="_blank" rel="noopener" hidden><span aria-hidden="true"><svg class="icon"><use href="#i-wa"/></svg></span> Escríbenos por WhatsApp</a>
+        <!-- OCULTO (redes sociales en configuración; reactivar cuando estén listas):
+        <div class="footer-socials">
+          <a href="#" class="footer-social hover-rotate" aria-label="Facebook del Centro Certificador Sagomu"><svg class="icon"><use href="#i-fb"/></svg></a>
+          <a href="#" class="footer-social hover-rotate" aria-label="X del Centro Certificador Sagomu"><svg class="icon"><use href="#i-x"/></svg></a>
+          <a href="#" class="footer-social hover-rotate" aria-label="Instagram del Centro Certificador Sagomu"><svg class="icon"><use href="#i-ig"/></svg></a>
+          <a href="#" class="footer-social hover-rotate" aria-label="LinkedIn del Centro Certificador Sagomu"><svg class="icon"><use href="#i-li"/></svg></a>
+        </div>
+        -->
+      </div>
+
+      <div class="footer-col">
+        <h3 class="footer-title">Plataforma</h3>
+        <ul class="footer-links">
+          <li><a href="#about">Sobre el Centro Certificador Sagomu</a></li>
+          <li><a href="#certificaciones">Certificaciones</a></li>
+          <!-- OCULTO (modo solo exámenes): <li><a href="#team">Instructores</a></li> -->
+          <li><a href="#agendar">Agendar examen</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3 class="footer-title">Enlaces rápidos</h3>
+        <ul class="footer-links">
+          <!-- <li><a href="#blog">Último blog</a></li> -->
+          <li><a href="#agendar">Contacto</a></li>
+          <!-- OCULTO (pendiente de contenido): <li><a href="#">Política de privacidad</a></li> -->
+          <!-- OCULTO (pendiente de contenido): <li><a href="#">Términos y condiciones</a></li> -->
+          <li><a href="#preguntas-frecuentes">Preguntas frecuentes</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3 class="footer-title">Alianzas oficiales</h3>
+        <div class="footer-logos" id="footer-logos" aria-label="Logotipos de partners oficiales"></div>
+      </div>
     </div>
 
-    <!-- SECCIÓN LABORATORIO VR (14 AÑOS DE EXPERIENCIA) -->
-    <div class="vr-lab-section">
-        <div class="vr-lab-text">
-            <span class="section-tag">Experiencia Comprobada</span>
-            <h2>+14 Años en el Mercado</h2>
-            <p>Desarrollo de videojuegos, apps móviles, páginas web e impresión 3D. Laboratorio de Realidad Virtual equipado con tecnología de punta.</p>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p class="footer-copy">© 2026 Centro Certificador Sagomu. Todos los derechos reservados.</p>
+        <!-- OCULTO (redes sociales en configuración; reactivar cuando estén listas):
+        <div class="footer-socials footer-socials-bottom">
+          <a href="#" class="footer-social hover-rotate" aria-label="Facebook del Centro Certificador Sagomu"><svg class="icon"><use href="#i-fb"/></svg></a>
+          <a href="#" class="footer-social hover-rotate" aria-label="X del Centro Certificador Sagomu"><svg class="icon"><use href="#i-x"/></svg></a>
+          <a href="#" class="footer-social hover-rotate" aria-label="Instagram del Centro Certificador Sagomu"><svg class="icon"><use href="#i-ig"/></svg></a>
+          <a href="#" class="footer-social hover-rotate" aria-label="LinkedIn del Centro Certificador Sagomu"><svg class="icon"><use href="#i-li"/></svg></a>
         </div>
+        -->
+      </div>
     </div>
+  </footer>
 
-    <!-- CURSOS SECTION -->
-    <section class="courses-section" id="cursos">
-        <div style="text-align: center">
-            <span class="section-tag">Educación</span>
-            <h2 class="section-title">Nuestros Cursos</h2>
-        </div>
+  <!-- back to top -->
+  <button id="back-to-top" class="back-to-top" aria-label="Volver arriba" hidden>
+    <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+  </button>
 
-        <div class="courses-list">
-            <!-- Card Unity -->
-            <div class="course-card">
-                <div class="course-bg bg-unity"></div>
-                <div class="course-overlay">
-                    <h3>Unity 2D, 3D, AR, VR</h3>
-                    <p>Aprende a crear mundos</p>
-                </div>
-            </div>
+  <!-- ============================= MODALES ============================= -->
 
-            <!-- Card Shaders -->
-            <div class="course-card">
-                <div class="course-bg bg-shader"></div>
-                <div class="course-overlay">
-                    <h3>Shaders & Gráficos</h3>
-                    <p>Shader Graph y HLSL</p>
-                </div>
-            </div>
+  <!-- Detalle de certificación -->
+  <div id="course-detail-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden></div>
+  <div class="modal-backdrop" id="course-backdrop" hidden></div>
 
-            <!-- Card Ciberseguridad -->
-            <div class="course-card">
-                <div class="course-bg bg-ciber"></div>
-                <div class="course-overlay">
-                    <h3>Ciberseguridad</h3>
-                    <p>Hacking Ético y Defense</p>
-                </div>
-            </div>
+  <!-- Video -->
+  <div id="video-modal" class="modal modal-video" role="dialog" aria-modal="true" aria-labelledby="video-modal-title" hidden>
+    <div class="modal-backdrop modal-video-backdrop" data-close-video></div>
+    <div class="video-shell">
+      <h2 id="video-modal-title" class="visually-hidden">Video: cómo certificarme con el Centro Certificador Sagomu</h2>
+      <button class="modal-close" data-close-video aria-label="Cerrar video">
+        <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+      <div class="video-frame" id="video-frame">
+        <video src="assets/video/como-certificarme.mp4" controls playsinline preload="metadata"></video>
+      </div>
+    </div>
+  </div>
 
-            <!-- Card Adobe -->
-            <div class="course-card">
-                <div class="course-bg bg-adobe"></div>
-                <div class="course-overlay">
-                    <h3>Suite Adobe</h3>
-                    <p>Photoshop, Illustrator, Premiere</p>
-                </div>
-            </div>
-
-            <!-- Card Arduino -->
-            <div class="course-card">
-                <div class="course-bg bg-arduino"></div>
-                <div class="course-overlay">
-                    <h3>Arduino & IoT</h3>
-                    <p>Hardware y Programación</p>
-                </div>
-            </div>
-
-            <!-- Card PMI -->
-            <div class="course-card">
-                <div class="course-bg bg-pmi"></div>
-                <div class="course-overlay">
-                    <h3>PMI & Office</h3>
-                    <p>Gestión de Proyectos</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CONTACTO SECTION -->
-    <section class="contact-section" id="contacto">
-        <div class="contact-container">
-            <div class="contact-info">
-                <h2>¿Listo para comenzar?</h2>
-                <p>Completa el formulario y nos pondremos en contacto contigo lo antes posible.</p>
-
-                <div class="contact-details">
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <span>contacto@sagomu.com</span>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>CDMX, México</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="contact-form-wrapper">
-                <form class="contact-form" id="contactForm" action="https://formspree.io/f/xnjorkvn" method="POST">
-                    <h3 class="form-title">Formulario de Contacto</h3>
-
-                    <div class="form-group">
-                        <label for="nombre">Nombre Completo *</label>
-                        <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre completo">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email">Correo Electrónico *</label>
-                        <input type="email" id="email" name="email" required placeholder="tu@correo.com">
-                        <span class="error-message" id="emailError"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="curso">Curso de Interés *</label>
-                        <select id="curso" name="curso" required>
-                            <option value="">Selecciona un curso...</option>
-                            <option value="Unity 2D, 3D, AR, VR">Unity 2D, 3D, AR, VR</option>
-                            <option value="Shaders & Gráficos">Shaders & Gráficos</option>
-                            <option value="Ciberseguridad">Ciberseguridad</option>
-                            <option value="Suite Adobe">Suite Adobe</option>
-                            <option value="Arduino & IoT">Arduino & IoT</option>
-                            <option value="PMI & Office">PMI & Office</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="mensaje">Mensaje Adicional</label>
-                        <textarea id="mensaje" name="mensaje" rows="4" placeholder="Escribe cualquier pregunta o comentario adicional..."></textarea>
-                    </div>
-
-                    <button type="submit" class="submit-btn">
-                        <span>Enviar Mensaje</span>
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </form>
-
-                <div class="success-message" id="successMessage">
-                    <i class="fas fa-check-circle"></i>
-                    <h3>¡Mensaje Enviado!</h3>
-                    <p>Gracias por tu interés. Nos pondremos en contacto contigo pronto.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer>
-        <div class="footer-logo">SAGOMU</div>
-        <p>Empresa Mexicana | Innovación Tecnológica</p>
-        <p>contacto@sagomu.com | CDMX, México</p>
-        <p>© 2026 Sagomu, S.A. de C.V. Todos los derechos reservados.</p>
-    </footer>
-
-    <script src="script.js"></script>
+  <script src="script.js?v=20261120c" defer></script>
 </body>
 </html>

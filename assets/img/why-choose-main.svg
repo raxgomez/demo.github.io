@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 550" role="img" aria-label="Estudiante rindiendo examen">
+  <defs>
+    <linearGradient id="wc-g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8C7CF8" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#0F0F1A" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="550" fill="url(#wc-g)"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.92">
+    <!-- monitor with checkmark -->
+    <rect x="130" y="160" width="240" height="160" rx="10"/>
+    <path d="M190 240 L225 275 L290 205"/>
+    <path d="M210 360 L210 400 M290 360 L290 400 M180 400 L320 400"/>
+    <!-- person -->
+    <circle cx="100" cy="220" r="22"/>
+    <path d="M75 280 Q75 250 100 250 Q125 250 125 280"/>
+  </g>
+  <text x="250" y="470" text-anchor="middle" font-family="Poppins, Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" opacity="0.65" letter-spacing="2">EXAMEN OFICIAL</text>
+</svg>

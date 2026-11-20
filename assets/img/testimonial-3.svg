@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" role="img" aria-label="Avatar de estudiante">
+  <defs><linearGradient id="t3-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6C5CE7"/><stop offset="1" stop-color="#4A3BB8"/></linearGradient></defs>
+  <circle cx="30" cy="30" r="30" fill="url(#t3-g)"/>
+  <circle cx="30" cy="24" r="10" fill="#FFFFFF" opacity="0.95"/>
+  <path d="M13 50 Q13 36 30 36 Q47 36 47 50 Z" fill="#FFFFFF" opacity="0.95"/>
+</svg>

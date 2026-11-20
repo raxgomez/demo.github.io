@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 550" role="img" aria-label="Centro certificador Sagomu">
+  <defs>
+    <linearGradient id="am-g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6C5CE7" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#0F0F1A" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="550" fill="url(#am-g)"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.9">
+    <!-- building / official center -->
+    <path d="M120 220 L250 160 L380 220"/>
+    <path d="M140 220 L140 400 L360 400 L360 220"/>
+    <line x1="230" y1="290" x2="270" y2="290"/>
+    <line x1="250" y1="270" x2="250" y2="310"/>
+    <rect x="170" y="320" width="160" height="80" rx="4"/>
+    <line x1="210" y1="320" x2="210" y2="400"/>
+    <line x1="290" y1="320" x2="290" y2="400"/>
+    <text x="250" y="100" text-anchor="middle" font-family="Poppins, Inter, sans-serif" font-size="22" font-weight="700" fill="#FFFFFF" opacity="0.9" stroke="none">SAGOMU</text>
+  </g>
+  <text x="250" y="470" text-anchor="middle" font-family="Poppins, Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" opacity="0.65" letter-spacing="2">CENTRO AUTORIZADO</text>
+</svg>

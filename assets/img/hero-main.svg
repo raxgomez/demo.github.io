@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 600" role="img" aria-label="Estudiante certificado en centro Pearson VUE">
+  <defs>
+    <linearGradient id="hm-g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6C5CE7" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#0F0F1A" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="hm-g2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8C7CF8" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#6C5CE7" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="600" fill="url(#hm-g)"/>
+  <circle cx="250" cy="230" r="180" fill="url(#hm-g2)"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.92">
+    <!-- graduation cap -->
+    <path d="M150 200 L250 160 L350 200 L250 240 Z"/>
+    <path d="M190 220 L190 280 Q250 310 310 280 L310 220"/>
+    <line x1="350" y1="200" x2="350" y2="260"/>
+    <circle cx="350" cy="265" r="5" fill="#FFFFFF"/>
+    <!-- person shoulders -->
+    <path d="M170 420 Q170 360 250 360 Q330 360 330 420"/>
+    <path d="M210 420 L210 460 M290 420 L290 460"/>
+  </g>
+  <text x="250" y="520" text-anchor="middle" font-family="Poppins, Inter, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" opacity="0.7" letter-spacing="2">SAGOMU · CERTIFICACIÓN</text>
+</svg>
