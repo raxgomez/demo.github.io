@@ -213,7 +213,7 @@
     const precios = [...new Set(exs.map((c) => c.costoTxt))];
     const precioTxt = precios.length === 1 ? precios[0] : precios.join(' / ');
     const listaTxt = exs.length <= 6 ? '<br>' + exs.map((c) => '• ' + c.corto).join('<br>') : '';
-    escribir('<strong>' + f + '</strong> — ' + (exs.length > 1 ? 'todas a ' : '') + '<strong class="as-precio">' + precioTxt + '</strong> (IVA incluido ✔)' + listaTxt + '<br>¿Cuál te interesa?',
+    escribir('<strong>' + f + '</strong> — ' + (exs.length > 1 ? 'Cada una a ' : '') + '<strong class="as-precio">' + precioTxt + '</strong> (IVA incluido ✔)' + listaTxt + '<br>¿Cuál te interesa?',
       exs.map((c) => ({ label: c.corto, fn: () => ficha(c), eco: c.corto }))
         .concat([{ label: '⬅️ Otra familia', fn: preciosFamilias, eco: '⬅️ Otra familia' }]), 'bd');
   }
@@ -343,9 +343,24 @@
     }
     return null;
   }
+  // alias de examen: palabras sueltas que apuntan a un examen específico
+  const ALIAS_EXAMEN = [
+    { re: /Unity Certified User: VR/i, tokens: ['vr', 'vr developer', 'realidad virtual', 'rv'] },
+    { re: /Unity Certified User: Artist/i, tokens: ['artist', 'artista'] },
+    { re: /Unity Certified User: Programmer/i, tokens: ['programmer', 'programador'] },
+    { re: /Cybersecurity/i, tokens: ['ciberseguridad', 'cybersecurity'] },
+    { re: /Meta Certified Digital Marketing/i, tokens: ['digital marketing', 'marketing digital'] }
+  ];
   function mencionanExamen(t) {
     // nombre corto como token dentro de la frase (p. ej. "excel", "ccst cybersecurity")
-    return cat.find((x) => new RegExp('\\b' + escapeRE(x.corto.toLowerCase()) + '\\b', 'i').test(t)) || null;
+    const porCorto = cat.find((x) => new RegExp('\\b' + escapeRE(x.corto.toLowerCase()) + '\\b', 'i').test(t));
+    if (porCorto) return porCorto;
+    for (const { re, tokens } of ALIAS_EXAMEN) {
+      if (tokens.some((tk) => new RegExp('\\b' + tk + '\\b', 'i').test(t))) {
+        return cat.find((x) => re.test(x.nombre)) || null;
+      }
+    }
+    return null;
   }
 
   function asesor() {
