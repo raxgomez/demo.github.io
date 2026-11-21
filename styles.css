@@ -738,10 +738,13 @@ body.no-scroll { overflow: hidden; }
 }
 
 @media (max-width: 768px) {
+  /* SIN blur en móvil: el backdrop-filter convierte al header en contenedor
+     de los elementos fixed (rompería el drawer del menú) */
+  .site-header { backdrop-filter: none; -webkit-backdrop-filter: none; }
   .main-nav {
     position: fixed; top: 0; right: 0; bottom: 0; width: min(320px, 86vw);
     background: var(--card-bg); border-left: 1px solid var(--border-color);
-    transform: translateX(100%); transition: transform 0.35s ease; z-index: 96;
+    transform: translateX(100%); transition: transform 0.35s ease; z-index: 101;
     padding: 84px 22px 22px; box-shadow: var(--card-shadow-hover);
   }
   .main-nav.open { transform: translateX(0); }
