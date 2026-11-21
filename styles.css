@@ -4,6 +4,13 @@
    Todas las reglas de sección referencian var(--…), nunca hex fijo.
    ===================================================================== */
 
+/* ---------- GUARDAS GLOBALES ---------- */
+/* El atributo hidden manda siempre (evita que un display: de una clase
+   anule la ocultación de paneles/modales) */
+[hidden] { display: none !important; }
+/* Sin scroll horizontal en móvil: cualquier excedente se recorta */
+html, body { overflow-x: clip; }
+
 /* ---------- VARIABLES DE TEMA ---------- */
 :root[data-theme="light"] {
   --bg-primary: #FFFFFF;

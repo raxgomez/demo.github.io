@@ -571,7 +571,9 @@
     } else {
       menuPrincipal(true);
     }
-    setTimeout(() => input.focus(), 300);
+    // el auto-enfoque solo con puntero fino (mouse): en móvil evita que el
+    // teclado suba de inmediato al abrir el chat
+    if (window.matchMedia && matchMedia('(pointer: fine)').matches) setTimeout(() => input.focus(), 300);
   }
   function cerrar() {
     panel.classList.remove('is-open');
