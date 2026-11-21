@@ -319,7 +319,7 @@
 
   // Alias por familia: tokens que la gente escribe en frases completas
   const ALIAS_FAMILIA = {
-    'Microsoft Office': ['microsoft office', 'office', 'microsoft', 'word', 'excel', 'powerpoint', 'outlook', 'access'],
+    'Microsoft Office': ['microsoft office', 'office', 'microsoft', 'mos', 'word', 'excel', 'powerpoint', 'outlook', 'access'],
     'Adobe': ['adobe', 'photoshop', 'illustrator', 'indesign'],
     'Autodesk': ['autodesk', 'autocad', '3ds max', 'fusion 360', 'fusion'],
     'Unity': ['unity'],
@@ -336,13 +336,32 @@
     'Microsoft Educator': ['educator', 'mce']
   };
   function escapeRE(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-  function mencionanFamilia(t) {
-    for (const [fam, alias] of Object.entries(ALIAS_FAMILIA)) {
-      if (!familias().includes(fam)) continue;
-      if (alias.some((a) => new RegExp('\\b' + escapeRE(a) + '\\b', 'i').test(t))) return fam;
-    }
-    return null;
+
+  /* ================== MOTOR DE ENTENDIMIENTO ==================
+     Normaliza acentos/espacios, une palabras separadas ("in design" →
+     "indesign") y tolera errores de escritura (Levenshtein). */
+  function norm(s) {
+    return (s || '').toLowerCase().normalize('NFD')
+      .replace(/[́̈]/g, '')          // quita acentos pero NO la ñ
+      .replace(/[^a-z0-9ñ\s]/g, ' ')
+      .replace(/\s+/g, ' ').trim();
   }
+  function dist(a, b) { // distancia de Levenshtein
+    if (a === b) return 0;
+    const m = a.length, n = b.length;
+    if (!m || !n) return m + n;
+    let prev = Array.from({ length: n + 1 }, (_, i) => i);
+    for (let i = 1; i <= m; i++) {
+      const cur = [i];
+      for (let j = 1; j <= n; j++) {
+        cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      }
+      prev = cur;
+    }
+    return prev[n];
+  }
+  const umbral = (len) => (len <= 5 ? 1 : len <= 8 ? 2 : 3); // typos tolerados por longitud
+
   // alias de examen: palabras sueltas que apuntan a un examen específico
   const ALIAS_EXAMEN = [
     { re: /Unity Certified User: VR/i, tokens: ['vr', 'vr developer', 'realidad virtual', 'rv'] },
@@ -351,30 +370,106 @@
     { re: /Cybersecurity/i, tokens: ['ciberseguridad', 'cybersecurity'] },
     { re: /Meta Certified Digital Marketing/i, tokens: ['digital marketing', 'marketing digital'] }
   ];
-  function mencionanExamen(t) {
-    // nombre corto como token dentro de la frase (p. ej. "excel", "ccst cybersecurity")
-    const porCorto = cat.find((x) => new RegExp('\\b' + escapeRE(x.corto.toLowerCase()) + '\\b', 'i').test(t));
-    if (porCorto) return porCorto;
-    for (const { re, tokens } of ALIAS_EXAMEN) {
-      if (tokens.some((tk) => new RegExp('\\b' + tk + '\\b', 'i').test(t))) {
-        return cat.find((x) => re.test(x.nombre)) || null;
+
+  function candidatos(tn) {
+    const tokens = tn.split(' ').filter(Boolean);
+    const bigramas = [];
+    for (let i = 0; i < tokens.length - 1; i++) bigramas.push(tokens[i] + tokens[i + 1]);
+    const examenes = cat.map((c) => ({ c, key: norm(c.corto), joined: norm(c.corto).replace(/ /g, '') }));
+    const famAlias = [];
+    for (const [f, list] of Object.entries(ALIAS_FAMILIA)) {
+      if (!familias().includes(f)) continue;
+      list.forEach((a) => famAlias.push({ f, key: norm(a) }));
+    }
+    return { tokens, bigramas, examenes, famAlias };
+  }
+
+  // mejor coincidencia tolerante a typos entre tokens/bigramas y el catálogo
+  function mejorCoincidencia(tokens, bigramas, examenes, famAlias) {
+    let mejor = null;
+    const considerar = (tipo, obj, key, tok, dExtra) => {
+      const d = dist(tok, key) + (dExtra || 0);
+      if (!mejor || d < mejor.d || (d === mejor.d && key.length > mejor.key.length)) {
+        mejor = { tipo, obj, key, d };
+      }
+    };
+    const pares = [];
+    tokens.forEach((tk) => { if (tk.length >= 4) pares.push([tk, false]); });
+    bigramas.forEach((bj) => { if (bj.length >= 6) pares.push([bj, true]); });
+    for (const [tok, esBigrama] of pares) {
+      for (const e of examenes) {
+        considerar('examen', e.c, e.key, tok, esBigrama ? 1 : 0);
+      }
+      for (const fa of famAlias) considerar('familia', fa.f, fa.key, tok, esBigrama ? 1 : 0);
+    }
+    return mejor;
+  }
+
+  // palabras clave de intención tolerantes a typos
+  const INTENTS = [
+    { palabras: ['informacion', 'info', 'catalogo', 'catalog', 'certificaciones', 'certificados', 'certificacion', 'lista'], fn: 'precios' },
+    { palabras: ['precios', 'precio', 'cuesta', 'costo', 'cuanto', 'vale'], fn: 'precios' },
+    { palabras: ['promo', 'promocion', 'descuento', 'paquete', 'paquetes', 'barato', 'oferta'], fn: 'promo' },
+    { palabras: ['vigencia', 'vigencias', 'vence', 'caduca', 'voucher'], fn: 'vigencias' },
+    { palabras: ['proceso', 'pasos', 'aplico', 'inscripcion', 'inscribirme', 'registro', 'certificarme', 'aplicar'], fn: 'aplico' },
+    { palabras: ['horario', 'horarios', 'atienden', 'atencion'], fn: 'horarios' },
+    { palabras: ['enlinea', 'online', 'remoto', 'ubicacion', 'ubicados', 'oficina', 'oficinas', 'presencial', 'direccion'], fn: 'enlinea' },
+    { palabras: ['apruebo', 'aprueba', 'reprobado', 'reintento', 'repetir'], fn: 'noaprobe' },
+    { palabras: ['factura', 'facturacion', 'facturan'], fn: 'factura' },
+    { palabras: ['asesor', 'humano', 'persona', 'contacto', 'whatsapp', 'hablar'], fn: 'asesor' }
+  ];
+  function mejorIntent(tn, tokens) {
+    for (const it of INTENTS) {
+      for (const p of it.palabras) {
+        if (tn.includes(' ' + p + ' ') || tn === p) return it.fn;
+        const u = umbral(Math.max(p.length, 5));
+        if (tokens.some((tk) => dist(tk, p) <= u)) return it.fn;
       }
     }
     return null;
   }
+  function irAIntent(fn) {
+    if (fn === 'precios') preciosFamilias();
+    else if (fn === 'promo') promoIntro();
+    else if (fn === 'vigencias') vigencias();
+    else if (fn === 'aplico') comoAplico();
+    else if (fn === 'horarios') faqResp('horarios');
+    else if (fn === 'enlinea') faqResp('enlinea');
+    else if (fn === 'noaprobe') faqResp('noaprobe');
+    else if (fn === 'factura') escribir('Lo de la facturación te la resuelve el equipo humano en un minuto 🧾', [{ label: '💬 Preguntar por WhatsApp', fn: () => abrirWA('Hola, vengo del sitio de Sagomu. ¿Manejan facturación? Quisiera información.'), eco: '💬 Preguntar por WhatsApp' }, { label: '🏠 Menú', fn: () => menuPrincipal(true), eco: '🏠 Menú' }], 'gl');
+    else if (fn === 'asesor') asesor();
+  }
 
+  function mencionanFamilia(t) {
+    for (const [fam, alias] of Object.entries(ALIAS_FAMILIA)) {
+      if (!familias().includes(fam)) continue;
+      if (alias.some((a) => new RegExp('\\b' + escapeRE(a) + '\\b', 'i').test(t))) return fam;
+    }
+    return null;
+  }
   function asesor() {
     abrirWA('Hola, vengo del sitio de Sagomu y quiero hablar con un asesor.');
   }
 
   function interpretar(texto) {
     const t = texto.toLowerCase();
-    if (/hola|buenas|hey|qué tal|que tal/.test(t)) { menuPrincipal(true); return; }
-    // examen o familia mencionados por nombre dentro de la frase (prioridad máxima)
-    const ex = mencionanExamen(t);
-    if (ex) { ficha(ex); return; }
-    const fam = mencionanFamilia(t);
-    if (fam) { preciosFamilia(fam); return; }
+    const tn = norm(texto);
+    const tnp = ' ' + tn + ' ';
+    if (/hola|buenas|hey|qué tal|que tal|saludos/.test(t)) { menuPrincipal(true); return; }
+    // 1) examen o familia exactos (palabra completa, o unión "in design" → "indesign")
+    const { tokens, bigramas, examenes, famAlias } = candidatos(tn);
+    const exExact = examenes.find((e) => tnp.includes(' ' + e.key + ' ') || bigramas.includes(e.joined));
+    if (exExact) { ficha(exExact.c); return; }
+    const faExact = famAlias.find((fa) => tnp.includes(' ' + fa.key + ' '));
+    if (faExact) { preciosFamilia(faExact.f); return; }
+    // 2) alias de examen sueltos (vr, ciberseguridad…)
+    for (const { re, tokens: tks } of ALIAS_EXAMEN) {
+      if (tks.some((tk) => new RegExp('\\b' + tk + '\\b', 'i').test(t))) {
+        const c = cat.find((x) => re.test(x.nombre));
+        if (c) { ficha(c); return; }
+      }
+    }
+    // 3) intenciones exactas
     if (/promo|descuento|paquete|barato|oferta/.test(t)) { promoIntro(); return; }
     if (/vigencia|vence|caduca|voucher|cuánto dura|cuanto dura/.test(t)) { vigencias(); return; }
     if (/cómo aplico|como aplico|proceso|pasos|registro|inscrib|certificarme/.test(t)) { comoAplico(); return; }
@@ -384,8 +479,27 @@
     if (/factur/.test(t)) { escribir('Lo de la facturación te la resuelve el equipo humano en un minuto 🧾', [{ label: '💬 Preguntar por WhatsApp', fn: () => abrirWA('Hola, vengo del sitio de Sagomu. ¿Manejan facturación? Quisiera información.'), eco: '💬 Preguntar por WhatsApp' }, { label: '🏠 Menú', fn: () => menuPrincipal(true), eco: '🏠 Menú' }], 'gl'); return; }
     if (/asesor|humano|persona|hablar|contact|whatsapp|whats/.test(t)) { asesor(); return; }
     if (/faq|pregunta|duda/.test(t)) { faqMenu(); return; }
-    // información general del catálogo
     if (/informaci|info\b|catalogo|catálogo|certificaci/.test(t)) { preciosFamilias(); return; }
+    // 4) tolerante a typos: exámenes, familias e intenciones
+    if (cat.length) {
+      const mejor = mejorCoincidencia(tokens, bigramas, examenes, famAlias);
+      if (mejor) {
+        if (mejor.d <= umbral(mejor.key.length)) {
+          mejor.tipo === 'examen' ? ficha(mejor.obj) : preciosFamilia(mejor.obj);
+          return;
+        }
+        if (mejor.d <= umbral(mejor.key.length) + 1) {
+          const nombre = mejor.tipo === 'examen' ? mejor.obj.corto : mejor.obj;
+          escribir('¿Quisiste decir <strong>' + nombre + '</strong>? 🤔', [
+            { label: '✔ Sí, ese', fn: () => (mejor.tipo === 'examen' ? ficha(mejor.obj) : preciosFamilia(mejor.obj)), eco: '✔ Sí, ' + nombre },
+            { label: '❌ No, ver familias', fn: preciosFamilias, eco: '❌ No, ver familias' }
+          ], 'bd');
+          return;
+        }
+      }
+      const intent = mejorIntent(tn, tokens);
+      if (intent) { irAIntent(intent); return; }
+    }
     escribir(FUERA[fueraIdx++ % FUERA.length], [
       { label: '💵 Ver precios', fn: preciosFamilias, eco: '💵 Ver precios' },
       { label: '🎁 Promo por paquetes', fn: promoIntro, eco: '🎁 Promo por paquetes' },
