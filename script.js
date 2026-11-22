@@ -197,7 +197,7 @@
     { src: 'assets/logos/unity.svg',                               alt: 'Unity', marca: 'Unity' },
     { src: 'assets/logos/meta.svg',                                alt: 'Meta', marca: 'Meta' },
     { src: 'assets/logos/Autodesk_certified_User_logo.svg',        alt: 'Autodesk Certified User', marca: 'Autodesk' },
-    { src: 'assets/logos/ic3.svg',                                 alt: 'IC3', marca: 'Certiport' },
+    { src: 'assets/logos/ic3.svg',                                 alt: 'IC3', marca: 'IC3' },
     { src: 'assets/logos/intuit.svg',                              alt: 'Intuit', marca: 'Intuit' },
     { src: 'assets/logos/microsoft_fundamentals_badge.svg',        alt: 'Microsoft Fundamentals', marca: 'Microsoft' },
   ];
@@ -323,7 +323,8 @@
   // Marcas del catálogo: nombre corto para el chip + logo de marca preferido
   const NOMBRES_CORTOS_MARCA = {
     'Communication Skills for Business': 'CSB',
-    'Critical Career Skills': 'CCS'
+    'Entrepreneurship and Small Business': 'ESB',
+    'Information Technology Specialist': 'ITS'
   };
   const LOGOS_MARCA = {
     'Adobe': 'assets/logos/Adobe_Certified_Professional_badge.svg',
@@ -331,8 +332,9 @@
     'Autodesk': 'assets/logos/Autodesk_certified_User_logo.svg',
     'Cisco': 'assets/logos/cisco.svg',
     'Communication Skills for Business': 'assets/logos/Communication_Skills_for_Business_badge.svg',
-    'Critical Career Skills': 'assets/logos/gen-ai-foundations.svg',
-    'Certiport': 'assets/logos/ic3.svg',
+    'Entrepreneurship and Small Business': 'assets/logos/esb.svg',
+    'IC3': 'assets/logos/ic3.svg',
+    'Information Technology Specialist': 'assets/logos/Information_Technology_Specialist_badge.svg',
     'Intuit': 'assets/logos/intuit.svg',
     'Meta': 'assets/logos/meta.svg',
     'Microsoft': 'assets/logos/microsoft_fundamentals_badge.svg',

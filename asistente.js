@@ -12,6 +12,20 @@
 (function () {
   'use strict';
 
+  /* ================== LANZAMIENTO · SOLO LOCAL ==================
+     El asistente sigue en desarrollo: mientras ASISTENTE_SOLO_LOCAL sea
+     true, SOLO se activa en local (localhost, 127.0.0.1 o file://).
+     En producción (sagomu.com, github.io, etc.) permanece apagado.
+     Cuando el guion esté listo para el público, cambiar a false. */
+  const ASISTENTE_SOLO_LOCAL = true;
+  function asistentePermitido() {
+    if (!ASISTENTE_SOLO_LOCAL) return true;
+    if (location.protocol === 'file:') return true;
+    const h = (location.hostname || '').toLowerCase();
+    return h === 'localhost' || h === '127.0.0.1' || h === '[::1]' ||
+           h === '0.0.0.0' || h.endsWith('.localhost');
+  }
+
   /* ================== CONFIGURACIÓN (editable) ================== */
   const PERSONAS = {
     bd: { nombre: 'Ing. Bot-dinez', emoji: '🤖' },
@@ -52,10 +66,10 @@
     if (m === 'Meta') return 'Meta';
     if (m === 'PMI') return 'PMI';
     if (/^IC3/.test(n)) return 'IC3';
-    if (/^IT Specialist/.test(n)) return 'IT Specialist';
+    if (/^IT Specialist/.test(n) || /^Generative AI/.test(n)) return 'IT Specialist';
     if (/Entrepreneurship and Small Business/.test(n)) return 'ESB';
     if (/English for IT/.test(n)) return 'English for IT';
-    if (/Professional Communication|Generative AI/.test(n)) return 'Skills For Business';
+    if (/Professional Communication/.test(n)) return 'Skills For Business';
     if (/Certified Educator/.test(n)) return 'Microsoft Educator';
     if (m === 'Microsoft') return 'Microsoft Office';
     return m;
@@ -326,12 +340,12 @@
     'Swift (Apple)': ['swift', 'apple'],
     'Cisco': ['cisco', 'ccst'],
     'IC3': ['ic3'],
-    'IT Specialist': ['it specialist', 'it especialista'],
+    'IT Specialist': ['it specialist', 'it especialista', 'its', 'generative ai', 'ia generativa'],
     'PMI': ['pmi', 'project management'],
     'Intuit': ['intuit'],
     'Meta': ['meta'],
     'ESB': ['esb', 'entrepreneurship'],
-    'Skills For Business': ['skills for business', 'skills', 'generative ai', 'professional communication'],
+    'Skills For Business': ['skills for business', 'skills', 'professional communication'],
     'English for IT': ['english for it', 'english'],
     'Microsoft Educator': ['educator', 'mce']
   };
@@ -584,6 +598,10 @@
 
   /* ================== INIT ================== */
   function init() {
+    if (!asistentePermitido()) {
+      console.info('[Sagomu] Asistente en desarrollo: desactivado fuera de local.');
+      return;
+    }
     construirUI();
     cargarCatalogo().catch(() => {
       escribir('Ups, no pude cargar el catálogo en este momento 😔', [
